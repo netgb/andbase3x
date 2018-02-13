@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="AbAnalogClock">
+        <attr name="dialDrawable" format="reference" />
+        <attr name="hourDrawable" format="reference" />
+        <attr name="minuteDrawable" format="reference" />
+        <attr name="secondDrawable" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="AbSlideLayout">
+        <attr name="normalBackground" format="reference" />
+        <attr name="pressedBackground" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="AbCircleImageView">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+        <attr name="border_overlay" format="boolean" />
+        <attr name="fill_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="AbSwitchButton">
+        <attr name="thumbDrawable" format="reference"/>
+        <attr name="thumbColor" format="color|reference"/>
+        <attr name="thumbMargin" format="dimension|reference"/>
+        <attr name="thumbMarginTop" format="dimension|reference"/>
+        <attr name="thumbMarginBottom" format="dimension|reference"/>
+        <attr name="thumbMarginLeft" format="dimension|reference"/>
+        <attr name="thumbMarginRight" format="dimension|reference"/>
+        <attr name="thumbWidth" format="dimension|reference"/>
+        <attr name="thumbHeight" format="dimension|reference"/>
+        <attr name="thumbRadius" format="dimension|reference"/>
+        <attr name="backRadius" format="dimension|reference"/>
+        <attr name="backDrawable" format="reference"/>
+        <attr name="backColor" format="color|reference"/>
+        <attr name="fadeBack" format="boolean"/>
+        <attr name="backMeasureRatio" format="float"/>
+        <attr name="animationDuration" format="integer"/>
+        <attr name="tintColor" format="color|reference"/>
+        <attr name="textOn" format="string"/>
+        <attr name="textOff" format="string"/>
+        <attr name="textMarginH" format="dimension"/>
+        <attr name="autoAdjustTextPosition" format="boolean"/>
+    </declare-styleable>
+
+    <!--透明渐变的TabView-->
+    <declare-styleable name="AlphaTabView">
+        <attr name="tabIconNormal" format="reference" />
+        <attr name="tabIconSelected" format="reference" />
+        <attr name="tabText" format="string" />
+        <attr name="tabTextSize" format="dimension" />
+        <attr name="textColorNormal" format="color" />
+        <attr name="textColorSelected" format="color" />
+        <attr name="badgeBackgroundColor" format="color" />
+        <attr name="paddingTexwithIcon" format="dimension"/>
+    </declare-styleable>
+
+</resources>
