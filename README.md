@@ -3,3 +3,4 @@
 
 直接看wiki吧
 学习andbase的使用从看流水账开始。
+https://github.com/zhaoqp2010/andbase3x/wiki
