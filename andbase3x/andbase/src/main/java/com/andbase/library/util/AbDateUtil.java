@@ -10,7 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -30,6 +30,9 @@ public class AbDateUtil {
 	
 	/** 时间日期格式化到年月日时分. */
 	public static final String dateFormatYMDHM = "yyyy-MM-dd HH:mm";
+
+	/** 时间日期格式化到月日时分. */
+	public static final String dateFormatMDHM = "MM-dd HH:mm";
 	
 	/** 时间日期格式化到月日. */
 	public static final String dateFormatMD = "MM/dd";

@@ -1,5 +1,36 @@
 package com.andbase.library.http;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+
+import com.andbase.library.asynctask.AbTask;
+import com.andbase.library.asynctask.AbTaskItem;
+import com.andbase.library.asynctask.AbTaskListener;
+import com.andbase.library.cache.disk.AbDiskCacheEntry;
+import com.andbase.library.cache.disk.AbDiskCacheImpl;
+import com.andbase.library.cache.http.AbHttpCacheResponse;
+import com.andbase.library.app.global.AbAppConfig;
+import com.andbase.library.http.entity.mine.content.StringBody;
+import com.andbase.library.http.listener.AbBinaryHttpResponseListener;
+import com.andbase.library.http.listener.AbFileHttpResponseListener;
+import com.andbase.library.http.listener.AbHttpHeaderCreateListener;
+import com.andbase.library.http.listener.AbHttpResponseListener;
+import com.andbase.library.http.listener.AbStringHttpResponseListener;
+import com.andbase.library.http.model.AbHttpException;
+import com.andbase.library.http.model.AbHttpStatus;
+import com.andbase.library.http.model.AbJsonParams;
+import com.andbase.library.http.model.AbJsonRequestParams;
+import com.andbase.library.http.model.AbOutputStreamProgress;
+import com.andbase.library.http.model.AbRequestParams;
+import com.andbase.library.http.ssl.NoSSLTrustManager;
+import com.andbase.library.util.AbAppUtil;
+import com.andbase.library.util.AbFileUtil;
+import com.andbase.library.util.AbLogUtil;
+import com.andbase.library.util.AbStrUtil;
+
+import org.apache.http.HttpEntity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,36 +46,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-
-import android.content.Context;
-import android.os.Handler;
-import android.os.Message;
-
-import com.andbase.library.asynctask.AbTask;
-import com.andbase.library.asynctask.AbTaskItem;
-import com.andbase.library.asynctask.AbTaskListener;
-import com.andbase.library.cache.disk.AbDiskCacheEntry;
-import com.andbase.library.cache.disk.AbDiskCacheImpl;
-import com.andbase.library.cache.http.AbHttpCacheResponse;
-import com.andbase.library.config.AbAppConfig;
-import com.andbase.library.http.model.AbHttpException;
-import com.andbase.library.http.entity.mine.content.StringBody;
-import com.andbase.library.http.listener.AbBinaryHttpResponseListener;
-import com.andbase.library.http.listener.AbFileHttpResponseListener;
-import com.andbase.library.http.listener.AbHttpResponseListener;
-import com.andbase.library.http.listener.AbStringHttpResponseListener;
-import com.andbase.library.http.model.AbHttpStatus;
-import com.andbase.library.http.model.AbJsonParams;
-import com.andbase.library.http.model.AbOutputStreamProgress;
-import com.andbase.library.http.model.AbRequestParams;
-import com.andbase.library.http.ssl.NoSSLTrustManager;
-import com.andbase.library.util.AbAppUtil;
-import com.andbase.library.util.AbFileUtil;
-import com.andbase.library.util.AbLogUtil;
-import com.andbase.library.util.AbStrUtil;
-
-import org.apache.http.HttpEntity;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -54,7 +56,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -71,9 +73,6 @@ public class AbHttpUtil {
     private static final String HTTP_POST = "POST";
     private static final String HTTP_PUT = "PUT";
     private static final String HTTP_DELETE = "DELETE";
-
-    /** Session Id. */
-    private String sessionId  = null;
 
     /** 磁盘缓存. */
     private AbDiskCacheImpl diskCache = null;
@@ -94,8 +93,14 @@ public class AbHttpUtil {
     /** 任务. */
     private List<AbTask> taskList = null;
 
+    /** Session ID  全局的，新的HttpUtil会自动使用这个值. */
+    public static String sessionId = null;
+
     /** 请求头. */
     private HashMap<String,String> headerMap = null;
+
+    /** 请求自定义. */
+    private AbHttpHeaderCreateListener httpHeaderCreateListener = null;
 
     /**
      * 构造函数，初始化.
@@ -105,7 +110,6 @@ public class AbHttpUtil {
         this.context = context;
         this.diskCache = AbDiskCacheImpl.getInstance(context);
         this.taskList = new ArrayList<AbTask>();
-        this.sessionId = AbAppConfig.sessionId;
         this.headerMap = new HashMap<String,String>();
         this.headerMap.put("SecurityCode",AbAppConfig.httpSecurityCode);
     }
@@ -142,7 +146,6 @@ public class AbHttpUtil {
 
         responseListener.setHandler(new ResponderHandler(responseListener));
         responseListener.onStart();
-        AbLogUtil.e(context,"[HTTP]:onStart:" + url);
         AbTask task = AbTask.newInstance();
         taskList.add(task);
         AbTaskItem item = new AbTaskItem();
@@ -150,7 +153,6 @@ public class AbHttpUtil {
             @Override
             public void get() {
                 try {
-                    AbLogUtil.e(context,"[HTTP]:execute start...");
                     doRequest(url,HTTP_GET,params,responseListener);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -184,6 +186,17 @@ public class AbHttpUtil {
     }
 
     /**
+     * 发送put请求
+     * @param url
+     * @param params
+     * @param responseListener
+     * @return
+     */
+    public AbTask put(final String url,final AbRequestParams params,final AbHttpResponseListener responseListener) {
+        return request(url,HTTP_PUT,params,responseListener);
+    }
+
+    /**
      * 发送delete请求.
      * @param url the url
      * @param params the params
@@ -191,6 +204,35 @@ public class AbHttpUtil {
      */
     public AbTask delete(final String url,final AbRequestParams params,final AbHttpResponseListener responseListener) {
         return request(url,HTTP_DELETE,params,responseListener);
+    }
+
+    /**
+     * 发送post请求
+     * @param url
+     * @param params
+     * @param responseListener
+     * @return
+     */
+    public AbTask postJson(final String url,final String params,final AbStringHttpResponseListener responseListener) {
+        return postJsonValue(url,HTTP_POST,params,responseListener);
+    }
+
+    /**
+     * 发送Json POST请求
+     * @param url
+     * @return
+     */
+    public AbTask postJson(final String url,final AbJsonParams params, final AbStringHttpResponseListener responseListener) {
+        return requestJson(url,HTTP_POST,params,responseListener);
+    }
+
+    /**
+     * 发送Json PUT请求
+     * @param url
+     * @return
+     */
+    public AbTask putJson(final String url,final AbJsonParams params, final AbStringHttpResponseListener responseListener) {
+        return requestJson(url,HTTP_PUT,params,responseListener);
     }
 
     /**
@@ -204,7 +246,6 @@ public class AbHttpUtil {
     public AbTask request(final String url,final String requestMethod,final AbRequestParams params,final AbHttpResponseListener responseListener) {
         responseListener.setHandler(new ResponderHandler(responseListener));
         responseListener.onStart();
-        AbLogUtil.e(context,"[HTTP]:onStart:" + url);
         final AbTask task = AbTask.newInstance();
         taskList.add(task);
         AbTaskItem item = new AbTaskItem();
@@ -212,7 +253,6 @@ public class AbHttpUtil {
             @Override
             public void get() {
                 try {
-                    AbLogUtil.e(context,"[HTTP]:execute start...");
                     doRequest(url,requestMethod,params,responseListener);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -235,7 +275,7 @@ public class AbHttpUtil {
      * @param responseListener the response listener
      */
     public AbTask getWithCache(final String url,final AbHttpResponseListener responseListener) {
-        return getWithCache(url,responseListener);
+        return getWithCache(url,null,responseListener);
     }
 
 
@@ -247,7 +287,6 @@ public class AbHttpUtil {
      */
     public AbTask getWithCache(final String url,final AbRequestParams params,final AbHttpResponseListener responseListener) {
 
-        this.sessionId = AbAppConfig.sessionId;
         responseListener.setHandler(new ResponderHandler(responseListener));
         responseListener.onStart();
         final AbTask task = AbTask.newInstance();
@@ -260,19 +299,31 @@ public class AbHttpUtil {
                 taskList.remove(task);
             }
 
-
             @Override
             public void get() {
+                String httpUrl = url;
                 try {
-                    AbLogUtil.e(context,"[HTTP]:execute start...");
-                    String httpUrl = url;
-                    //HttpGet连接对象
                     if(params!=null && params.size()[0] > 0){
-                        if(url.indexOf("?")==-1){
-                            httpUrl += "?";
+
+                        for (ConcurrentHashMap.Entry<String, String> entry : params.getUrlParams().entrySet()) {
+                            String key = "{" + entry.getKey() +"}";
+                            if(httpUrl.contains(key)){
+                                httpUrl = httpUrl.replace(key,entry.getValue());
+                                params.getUrlParams().remove(entry.getKey());
+                            }
                         }
-                        httpUrl += params.getParamString();
+
+                        if(params!=null && params.size()[0] > 0){
+
+                            if(params.getUrlParams().size() > 0  && httpUrl.indexOf("?")==-1){
+                                httpUrl += "?";
+                            }
+                            httpUrl += params.getParamString();
+                        }
+
                     }
+
+                    AbLogUtil.e(context,"[HTTP]:on start:" + httpUrl);
 
                     //查看本地缓存
                     final String cacheKey = diskCache.getCacheKey(httpUrl);
@@ -359,7 +410,6 @@ public class AbHttpUtil {
      */
     public AbTask getWithCacheLess(final String url,final AbRequestParams params,final AbHttpResponseListener responseListener) {
 
-        this.sessionId = AbAppConfig.sessionId;
         responseListener.setHandler(new ResponderHandler(responseListener));
         responseListener.onStart();
         final AbTask task = AbTask.newInstance();
@@ -376,15 +426,28 @@ public class AbHttpUtil {
             @Override
             public void get() {
                 try {
-                    AbLogUtil.e(context,"[HTTP]:execute start...");
+
                     String httpUrl = url;
-                    //HttpGet连接对象
-                    if(params!=null  && params.size()[0] > 0){
-                        if(url.indexOf("?")==-1){
-                            httpUrl += "?";
+                    if(params!=null && params.size()[0] > 0){
+
+                        for (ConcurrentHashMap.Entry<String, String> entry : params.getUrlParams().entrySet()) {
+                            String key = "{" + entry.getKey() +"}";
+                            if(httpUrl.contains(key)){
+                                httpUrl = httpUrl.replace(key,entry.getValue());
+                                params.getUrlParams().remove(entry.getKey());
+                            }
                         }
-                        httpUrl += params.getParamString();
+
+                        if(params!=null && params.size()[0] > 0){
+
+                            if(params.getUrlParams().size() > 0  && httpUrl.indexOf("?")==-1){
+                                httpUrl += "?";
+                            }
+                            httpUrl += params.getParamString();
+                        }
                     }
+
+                    AbLogUtil.e(context,"[HTTP]:on start:" + httpUrl);
 
                     //查看本地缓存
                     final String cacheKey = diskCache.getCacheKey(httpUrl);
@@ -408,7 +471,7 @@ public class AbHttpUtil {
                             byte [] httpData = entry.data;
                             String responseBody = new String(httpData);
                             ((AbStringHttpResponseListener)responseListener).sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, responseBody);
-                            AbLogUtil.i(context, "[HTTP GET CACHED]:"+httpUrl+",result："+responseBody);
+                            AbLogUtil.i(context, "[HTTP GET CACHED]:"+httpUrl+" ,result："+responseBody);
 
                         }
                     }else{
@@ -420,7 +483,7 @@ public class AbHttpUtil {
 
                             if(response!=null){
                                 String responseBody = new String(response.data);
-                                AbLogUtil.i(context, "[HTTP GET]:"+httpUrl+",result："+responseBody);
+                                AbLogUtil.i(context, "[HTTP GET]:"+httpUrl+" ,result："+responseBody);
                                 AbDiskCacheEntry entryNew = diskCache.parseCacheHeaders(response,AbAppConfig.DISK_CACHE_EXPIRES_TIME);
                                 if(entryNew!=null){
                                     diskCache.put(cacheKey,entryNew);
@@ -441,7 +504,7 @@ public class AbHttpUtil {
                                     byte [] httpData = entry.data;
                                     String responseBody = new String(httpData);
                                     ((AbStringHttpResponseListener)responseListener).sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, responseBody);
-                                    AbLogUtil.i(context, "[HTTP GET CACHED]:"+httpUrl+",result："+responseBody);
+                                    AbLogUtil.i(context, "[HTTP GET CACHED]:"+httpUrl+" ,result："+responseBody);
 
                                 }
 
@@ -451,7 +514,7 @@ public class AbHttpUtil {
                             byte [] httpData = entry.data;
                             String responseBody = new String(httpData);
                             ((AbStringHttpResponseListener)responseListener).sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, responseBody);
-                            AbLogUtil.i(context, "[HTTP GET CACHED]:"+httpUrl+",result："+responseBody);
+                            AbLogUtil.i(context, "[HTTP GET CACHED]:"+httpUrl+" ,result："+responseBody);
                         }
 
 
@@ -468,23 +531,7 @@ public class AbHttpUtil {
         return task;
     }
 
-    /**
-     * 发送Json POST请求
-     * @param url
-     * @return
-     */
-    public AbTask postJson(final String url,final AbJsonParams params, final AbStringHttpResponseListener responseListener) {
-        return requestJson(url,HTTP_POST,params,responseListener);
-    }
 
-    /**
-     * 发送Json PUT请求
-     * @param url
-     * @return
-     */
-    public AbTask putJson(final String url,final AbJsonParams params, final AbStringHttpResponseListener responseListener) {
-        return requestJson(url,HTTP_PUT,params,responseListener);
-    }
 
     /**
      * 发送Json POST请求
@@ -494,9 +541,9 @@ public class AbHttpUtil {
      */
     public AbTask requestJson(final String url,final String requestMethod,final AbJsonParams params, final AbStringHttpResponseListener responseListener) {
 
-        this.sessionId = AbAppConfig.sessionId;
         responseListener.setHandler(new ResponderHandler(responseListener));
         responseListener.onStart();
+
         final AbTask task = AbTask.newInstance();
         taskList.add(task);
         AbTaskItem item = new AbTaskItem();
@@ -511,6 +558,7 @@ public class AbHttpUtil {
             public void get() {
                 HttpURLConnection httpURLConnection = null;
                 InputStream inputStream = null;
+                String httpUrl = url;
                 try {
                     if(!AbAppUtil.isNetworkAvailable(context)){
                         Thread.sleep(200);
@@ -519,9 +567,31 @@ public class AbHttpUtil {
                     }
 
                     String resultString = null;
-                    httpURLConnection = openConnection(url);
+
+                    //支持符号匹配参数
+                    if(params!=null && params instanceof AbJsonRequestParams){
+                        AbJsonRequestParams jsonRequestParams = (AbJsonRequestParams)params;
+                        if(jsonRequestParams.getUrlParams().size() > 0){
+
+                            for (HashMap.Entry<String,String> entry : jsonRequestParams.getUrlParams().entrySet()) {
+                                String key = "{" + entry.getKey() +"}";
+                                if(httpUrl.contains(key)){
+                                    httpUrl = httpUrl.replace(key,entry.getValue());
+                                }
+                            }
+                        }
+                    }
+
+                    AbLogUtil.e(context,"[HTTP]:on start:" + httpUrl);
+
+                    httpURLConnection = openConnection(httpUrl);
                     httpURLConnection.setRequestMethod(requestMethod);
+
                     //请求头
+                    if(httpHeaderCreateListener!=null){
+                        HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
+                        headerMap.putAll(headerMore);
+                    }
                     Iterator iterator = headerMap.entrySet().iterator();
                     while (iterator.hasNext()) {
                         Map.Entry entry = (Map.Entry) iterator.next();
@@ -546,26 +616,153 @@ public class AbHttpUtil {
                     }
 
                     if(body!=null){
-                        AbLogUtil.i(context, "[HTTP POST]:"+url+",body:"+params.getJson());
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,body:"+params.getJson());
                     }else{
-                        AbLogUtil.i(context, "[HTTP POST]:"+url+",body:无");
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,body:无");
                     }
 
                     int code = httpURLConnection.getResponseCode();
                     if (code == AbHttpStatus.SUCCESS_CODE){
                         inputStream = httpURLConnection.getInputStream();
                         resultString = readString(httpURLConnection,responseListener,true);
+
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,result:" + resultString);
                         responseListener.sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, resultString);
                     }else{
                         inputStream = httpURLConnection.getErrorStream();
-                        resultString = readString(httpURLConnection,null,false);
+                        if(inputStream!= null){
+                            resultString = readString(inputStream,null,false);
+                        }else{
+                            resultString = readString(httpURLConnection,null,false);
+                        }
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,failure:" + resultString);
                         AbHttpException exception = new AbHttpException(code,resultString);
                         responseListener.sendFailureMessage(exception.getCode(),exception.getMessage(),exception);
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    AbLogUtil.i(context, "[HTTP POST]:"+url+",error："+e.getMessage());
+                    AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,error："+e.getMessage());
+                    //发送失败消息
+                    AbHttpException exception = new AbHttpException(e);
+                    responseListener.sendFailureMessage(exception.getCode(),exception.getMessage(),exception);
+                } finally {
+                    try{
+                        if(inputStream!=null){
+                            inputStream.close();
+                        }
+                    }catch(Exception e){
+                    }
+                    if (httpURLConnection != null) {
+                        httpURLConnection.disconnect();
+                    }
+                }
+            }
+
+        });
+        task.execute(item);
+        taskList.add(task);
+        return task;
+
+    }
+
+    /**
+     * 发送Json POST请求
+     * @param url
+     * @param params
+     * @return
+     */
+    public AbTask postJsonValue(final String url,final String requestMethod,final String params, final AbStringHttpResponseListener responseListener) {
+
+        responseListener.setHandler(new ResponderHandler(responseListener));
+        responseListener.onStart();
+
+        final AbTask task = AbTask.newInstance();
+        taskList.add(task);
+        AbTaskItem item = new AbTaskItem();
+        item.setListener(new AbTaskListener(){
+
+            @Override
+            public void update() {
+                taskList.remove(task);
+            }
+
+            @Override
+            public void get() {
+                HttpURLConnection httpURLConnection = null;
+                InputStream inputStream = null;
+                String httpUrl = url;
+                try {
+                    if(!AbAppUtil.isNetworkAvailable(context)){
+                        Thread.sleep(200);
+                        responseListener.sendFailureMessage(AbHttpStatus.CONNECT_FAILURE_CODE,AbAppConfig.CONNECT_EXCEPTION, new AbHttpException(AbHttpStatus.CONNECT_FAILURE_CODE,AbAppConfig.CONNECT_EXCEPTION));
+                        return;
+                    }
+
+                    String resultString = null;
+
+                    AbLogUtil.e(context,"[HTTP]:on start:" + httpUrl);
+
+
+                    httpURLConnection = openConnection(httpUrl);
+                    httpURLConnection.setRequestMethod(requestMethod);
+
+                    //请求头
+                    if(httpHeaderCreateListener!=null){
+                        HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
+                        headerMap.putAll(headerMore);
+                    }
+                    Iterator iterator = headerMap.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry entry = (Map.Entry) iterator.next();
+                        String key = (String)entry.getKey();
+                        String val = (String)entry.getValue();
+                        httpURLConnection.setRequestProperty(key,val);
+                    }
+                    if(!AbStrUtil.isEmpty(sessionId)){
+                        httpURLConnection.setRequestProperty("Cookie", "JSESSIONID="+sessionId);
+                    }
+                    httpURLConnection.setConnectTimeout(AbAppConfig.DEFAULT_CONNECT_TIMEOUT);
+                    httpURLConnection.setReadTimeout(AbAppConfig.DEFAULT_READ_TIMEOUT);
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setRequestProperty("Content-Type","application/json");
+                    StringBody body = null;
+                    if(params!=null){
+                        httpURLConnection.setRequestProperty("connection", "keep-alive");
+                        body = StringBody.create(params,"application/json", Charset.forName("UTF-8"));
+                        body.writeTo(httpURLConnection.getOutputStream(),null);
+                    }else{
+                        httpURLConnection.connect();
+                    }
+
+                    if(body!=null){
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,body:"+params);
+                    }else{
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,body:无");
+                    }
+
+                    int code = httpURLConnection.getResponseCode();
+                    if (code == AbHttpStatus.SUCCESS_CODE){
+                        inputStream = httpURLConnection.getInputStream();
+                        resultString = readString(httpURLConnection,responseListener,true);
+
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,result:" + resultString);
+                        responseListener.sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, resultString);
+                    }else{
+                        inputStream = httpURLConnection.getErrorStream();
+                        if(inputStream!= null){
+                            resultString = readString(inputStream,null,false);
+                        }else{
+                            resultString = readString(httpURLConnection,null,false);
+                        }
+                        AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,failure:" + resultString);
+                        AbHttpException exception = new AbHttpException(code,resultString);
+                        responseListener.sendFailureMessage(exception.getCode(),exception.getMessage(),exception);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,error："+e.getMessage());
                     //发送失败消息
                     AbHttpException exception = new AbHttpException(e);
                     responseListener.sendFailureMessage(exception.getCode(),exception.getMessage(),exception);
@@ -596,10 +793,9 @@ public class AbHttpUtil {
      * @param responseListener
      */
     public void doRequest(final String url,final String requestMethod, final AbRequestParams params, final AbHttpResponseListener responseListener) {
-        this.sessionId = AbAppConfig.sessionId;
         HttpURLConnection httpURLConnection = null;
         InputStream inputStream = null;
-
+        String httpUrl = url;
         try {
             if(!AbAppUtil.isNetworkAvailable(context)){
                 Thread.sleep(200);
@@ -607,21 +803,39 @@ public class AbHttpUtil {
                 return;
             }
 
-            String newUrl = url;
-            if(requestMethod == HTTP_GET){
-                if(params!=null && params.size()[0] > 0){
-                    if(newUrl.indexOf("?")==-1){
-                        newUrl += "?";
+            if(params!=null && params.size()[0] > 0){
+
+                for (ConcurrentHashMap.Entry<String, String> entry : params.getUrlParams().entrySet()) {
+                    String key = "{" + entry.getKey() +"}";
+                    if(httpUrl.contains(key)){
+                        httpUrl = httpUrl.replace(key,entry.getValue());
+                        params.getUrlParams().remove(entry.getKey());
                     }
-                    newUrl += params.getParamString();
+                }
+
+                if(requestMethod == HTTP_GET){
+                    if(params!=null && params.size()[0] > 0){
+
+                        if(params.getUrlParams().size() > 0  && httpUrl.indexOf("?")==-1){
+                            httpUrl += "?";
+                        }
+                        httpUrl += params.getParamString();
+                    }
                 }
             }
 
-            httpURLConnection = openConnection(newUrl);
+            AbLogUtil.e(context,"[HTTP]:on start:" + httpUrl);
+
+            httpURLConnection = openConnection(httpUrl);
             httpURLConnection.setRequestMethod(requestMethod);
             httpURLConnection.setUseCaches(false);
 
             //请求头
+            if(httpHeaderCreateListener!=null){
+                HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
+                this.headerMap.putAll(headerMore);
+            }
+
             Iterator iterator = this.headerMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry entry = (Map.Entry) iterator.next();
@@ -637,7 +851,7 @@ public class AbHttpUtil {
             httpURLConnection.setConnectTimeout(AbAppConfig.DEFAULT_CONNECT_TIMEOUT);
             httpURLConnection.setReadTimeout(AbAppConfig.DEFAULT_READ_TIMEOUT);
             httpURLConnection.setRequestProperty("connection", "keep-alive");
-            if(params != null && requestMethod == HTTP_POST){
+            if(params != null && (requestMethod == HTTP_POST || requestMethod == HTTP_PUT)){
                 httpURLConnection.setDoOutput(true);
                 //使用NameValuePair来保存要传递的Post参数设置字符集
                 HttpEntity httpEntity = params.getEntity();
@@ -657,13 +871,13 @@ public class AbHttpUtil {
             }
 
             int code = httpURLConnection.getResponseCode();
+            String resultString = "";
             AbLogUtil.e(context,"[HTTP]:Response Code = " + code);
             if (code == AbHttpStatus.SUCCESS_CODE){
-                AbLogUtil.e(context,"[HTTP]:onSuccess");
                 if(responseListener instanceof AbStringHttpResponseListener){
                     //字符串
                     AbStringHttpResponseListener stringHttpResponseListener =  (AbStringHttpResponseListener)responseListener;
-                    String resultString = readString(httpURLConnection ,responseListener,true);
+                    resultString = readString(httpURLConnection ,responseListener,true);
                     stringHttpResponseListener.sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, resultString);
 
                 }else if(responseListener instanceof AbBinaryHttpResponseListener){
@@ -679,10 +893,14 @@ public class AbHttpUtil {
                     writeToFile(context,httpURLConnection,fileName,fileHttpResponseListener,true);
                     fileHttpResponseListener.sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, fileName);
                 }
-
+                AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,result:" + resultString);
             }else{
                 inputStream = httpURLConnection.getErrorStream();
-                String resultString = readString(httpURLConnection,null,false);
+                if(inputStream!= null){
+                    resultString = readString(inputStream,null,false);
+                }else{
+                    resultString = readString(httpURLConnection,null,false);
+                }
                 if(AbStrUtil.isEmpty(resultString)){
                     if(code ==404){
                         resultString = AbAppConfig.NOT_FOUND_EXCEPTION;
@@ -692,15 +910,14 @@ public class AbHttpUtil {
                         resultString = AbAppConfig.UNTREATED_EXCEPTION;
                     }
                 }
+                AbLogUtil.e(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,failure:"+resultString);
                 AbHttpException exception = new AbHttpException(code,resultString);
                 responseListener.sendFailureMessage(exception.getCode(),exception.getMessage(),exception);
-                AbLogUtil.e(context,"[HTTP]:onFailure");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            AbLogUtil.e(context, "[HTTP ERRPR]:"+url+" ("+e.getMessage() + ")");
-            //发送失败消息
+            AbLogUtil.e(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,error:"+e.getMessage());
             AbHttpException exception = new AbHttpException(e);
             responseListener.sendFailureMessage(exception.getCode(),exception.getMessage(),exception);
         } finally {
@@ -723,11 +940,10 @@ public class AbHttpUtil {
      * @param responseListener
      */
     public void doRequestWithoutThread(final String url,final String requestMethod, final AbRequestParams params, final AbHttpResponseListener responseListener) {
-        this.sessionId = AbAppConfig.sessionId;
         HttpURLConnection httpURLConnection = null;
         InputStream inputStream = null;
         responseListener.onStart();
-        AbLogUtil.e(context,"[HTTP]:onStart:" + url);
+        String httpUrl = url;
         try {
             if(!AbAppUtil.isNetworkAvailable(context)){
                 Thread.sleep(200);
@@ -735,20 +951,38 @@ public class AbHttpUtil {
                 return;
             }
 
-            String newUrl = url;
-            if(requestMethod == HTTP_GET){
-                if(params!=null && params.size()[0] > 0){
-                    if(newUrl.indexOf("?")==-1){
-                        newUrl += "?";
+            if(params!=null && params.size()[0] > 0){
+
+                for (ConcurrentHashMap.Entry<String, String> entry : params.getUrlParams().entrySet()) {
+                    String key = "{" + entry.getKey() +"}";
+                    if(httpUrl.contains(key)){
+                        httpUrl = httpUrl.replace(key,entry.getValue());
+                        params.getUrlParams().remove(entry.getKey());
                     }
-                    newUrl += params.getParamString();
+                }
+
+                if(requestMethod == HTTP_GET){
+                    if(params!=null && params.size()[0] > 0){
+
+                        if(params.getUrlParams().size() > 0  && httpUrl.indexOf("?")==-1){
+                            httpUrl += "?";
+                        }
+                        httpUrl += params.getParamString();
+                    }
                 }
             }
 
-            httpURLConnection = openConnection(newUrl);
+            AbLogUtil.e(context,"[HTTP]:on start:" + httpUrl);
+
+            httpURLConnection = openConnection(httpUrl);
             httpURLConnection.setRequestMethod(requestMethod);
             httpURLConnection.setUseCaches(false);
+
             //请求头
+            if(httpHeaderCreateListener!=null){
+                HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
+                this.headerMap.putAll(headerMore);
+            }
             Iterator iterator = this.headerMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry entry = (Map.Entry) iterator.next();
@@ -762,7 +996,7 @@ public class AbHttpUtil {
             httpURLConnection.setConnectTimeout(AbAppConfig.DEFAULT_CONNECT_TIMEOUT);
             httpURLConnection.setReadTimeout(AbAppConfig.DEFAULT_READ_TIMEOUT);
             httpURLConnection.setRequestProperty("connection", "keep-alive");
-            if(params != null && requestMethod == HTTP_POST){
+            if(params != null && (requestMethod == HTTP_POST || requestMethod == HTTP_PUT)){
                 httpURLConnection.setDoOutput(true);
                 //使用NameValuePair来保存要传递的Post参数设置字符集
                 HttpEntity httpEntity = params.getEntity();
@@ -782,12 +1016,13 @@ public class AbHttpUtil {
             }
 
             int code = httpURLConnection.getResponseCode();
+            String resultString = "";
             AbLogUtil.e(context,"[HTTP]:Response Code = " + code);
             if (code == AbHttpStatus.SUCCESS_CODE){
                 AbLogUtil.e(context,"[HTTP]:onSuccess");
                 if(responseListener instanceof AbStringHttpResponseListener){
                     //字符串
-                    String resultString = readString(httpURLConnection ,responseListener,false);
+                    resultString = readString(httpURLConnection ,responseListener,false);
                     AbStringHttpResponseListener stringHttpResponseListener =  (AbStringHttpResponseListener)responseListener;
                     stringHttpResponseListener.onSuccess(AbHttpStatus.SUCCESS_CODE, resultString);
 
@@ -806,9 +1041,16 @@ public class AbHttpUtil {
                     fileHttpResponseListener.onSuccess(AbHttpStatus.SUCCESS_CODE, fileName);
                 }
 
+                AbLogUtil.i(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,result:" + resultString);
+
             }else{
+
                 inputStream = httpURLConnection.getErrorStream();
-                String resultString = readString(httpURLConnection,null,false);
+                if(inputStream!= null){
+                    resultString = readString(inputStream,null,false);
+                }else{
+                    resultString = readString(httpURLConnection,null,false);
+                }
                 if(AbStrUtil.isEmpty(resultString)){
                     if(code == 404){
                         resultString = AbAppConfig.NOT_FOUND_EXCEPTION;
@@ -818,6 +1060,7 @@ public class AbHttpUtil {
                         resultString = AbAppConfig.UNTREATED_EXCEPTION;
                     }
                 }
+                AbLogUtil.e(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,failure:"+resultString);
                 AbHttpException exception = new AbHttpException(code,resultString);
                 AbLogUtil.e(context,"[HTTP]:onFailure");
                 responseListener.onFailure(exception.getCode(),exception.getMessage(),exception);
@@ -826,7 +1069,7 @@ public class AbHttpUtil {
             responseListener.onFinish();
         } catch (Exception e) {
             e.printStackTrace();
-            AbLogUtil.e(context, "[HTTP]:"+url+",error："+e.getMessage());
+            AbLogUtil.e(context, "[HTTP "+requestMethod+"]:"+httpUrl+" ,error:"+e.getMessage());
             //发送失败消息
             AbHttpException exception = new AbHttpException(e);
             responseListener.onFailure(exception.getCode(),exception.getMessage(),exception);
@@ -923,6 +1166,31 @@ public class AbHttpUtil {
     }
 
     /**
+     * 从流中读取字符串
+     * @param inputStream
+     * @param responseListener
+     * @return
+     */
+    private String readString(InputStream inputStream,AbHttpResponseListener responseListener,boolean isThread) {
+        StringBuffer stringBuffer = new StringBuffer();
+        try {
+            if (inputStream != null) {
+                //一定要是字符流  否则中文被截取成字节后会坏掉
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream,"UTF-8");
+                int len = 0;
+                char[] buffer = new char[1024];
+                while((len = inputStreamReader.read(buffer)) > 0){
+                    stringBuffer.append(new String(buffer, 0,len));
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return stringBuffer.toString();
+    }
+
+    /**
      * 从流中获取字节数据
      * @param httpURLConnection
      * @param responseListener
@@ -993,7 +1261,7 @@ public class AbHttpUtil {
             switch (msg.what) {
 
                 case SUCCESS_MESSAGE:
-
+                    AbLogUtil.e(context,"[HTTP]:onSuccess");
                     response = (Object[]) msg.obj;
 
                     if (response != null){
@@ -1031,6 +1299,7 @@ public class AbHttpUtil {
                     if (response != null && response.length >= 3){
                         //异常转换为可提示的
                         AbHttpException exception = new AbHttpException((Exception) response[2]);
+                        AbLogUtil.e(context,"[HTTP]:onFailure");
                         responseListener.onFailure((Integer) response[0], (String) response[1], exception);
                     }else{
                         AbLogUtil.i(context, "FAILURE_MESSAGE "+AbAppConfig.MISSING_PARAMETERS);
@@ -1040,6 +1309,7 @@ public class AbHttpUtil {
 
                     break;
                 case START_MESSAGE:
+                    AbLogUtil.e(context,"[HTTP]:onStart");
                     responseListener.onStart();
                     break;
                 case PROGRESS_MESSAGE:
@@ -1063,7 +1333,6 @@ public class AbHttpUtil {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
-        AbAppConfig.sessionId = sessionId;
     }
 
     /**
@@ -1183,11 +1452,15 @@ public class AbHttpUtil {
         this.headerMap.put(key,value);
     }
 
+    public void removeHeader(String key){
+        this.headerMap.remove(key);
+    }
+
     public void clearHeaders(){
         this.headerMap.clear();
     }
 
-    public void removeHeader(String key){
-        this.headerMap.remove(key);
+    public void setHttpHeaderCreateListener(AbHttpHeaderCreateListener httpHeaderCreateListener) {
+        this.httpHeaderCreateListener = httpHeaderCreateListener;
     }
 }

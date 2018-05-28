@@ -40,7 +40,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme1">
+        android:theme="@style/AppThemeDefault">
 
         <activity
             android:name="com.upu173.andbase.main.activity.LauncherActivity"

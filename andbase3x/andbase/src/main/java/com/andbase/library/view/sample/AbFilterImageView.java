@@ -10,20 +10,17 @@ import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.andbase.library.view.listener.AbOnClickListener;
 import com.andbase.library.view.listener.AbOnFocusChangeListener;
 
-
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
  * Info 滤镜效果的ImageView，获取焦点产生滤镜效果
  */
-
 public class AbFilterImageView extends AppCompatImageView {
 
     private AbOnClickListener onClickListener;

@@ -21,7 +21,13 @@ import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Copyright upu173.com
+ * Author 还如一梦中
+ * Date 2017/4/24 13:27
+ * Email 396196516@qq.com
+ * Info 水波纹的View动画
+ */
 public class AbWaveView extends View {
     /**
      * +------------------------+

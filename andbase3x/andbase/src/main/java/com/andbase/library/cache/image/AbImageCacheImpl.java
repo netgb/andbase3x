@@ -8,7 +8,7 @@ import android.util.LruCache;
 import com.andbase.library.cache.disk.AbDiskCacheEntry;
 import com.andbase.library.cache.disk.AbDiskCacheImpl;
 import com.andbase.library.cache.http.AbHttpCacheResponse;
-import com.andbase.library.config.AbAppConfig;
+import com.andbase.library.app.global.AbAppConfig;
 import com.andbase.library.image.AbImageLoader;
 import com.andbase.library.util.AbImageUtil;
 import com.andbase.library.util.AbLogUtil;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com

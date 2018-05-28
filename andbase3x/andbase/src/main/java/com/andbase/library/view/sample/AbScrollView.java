@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Think on 2017/4/24.
+ * Copyright upu173.com
+ * Author 还如一梦中
+ * Date 2017/4/24 13:27
+ * Email 396196516@qq.com
+ * Info 返回滚动距离的ScrollView
  */
-
 public class AbScrollView extends ScrollView {
 
     private List<AbOnScrollChangedListener> scrollChangedListeners;

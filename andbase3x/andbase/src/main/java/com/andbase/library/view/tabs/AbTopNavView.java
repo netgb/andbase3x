@@ -1,11 +1,13 @@
 package com.andbase.library.view.tabs;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,16 +17,13 @@ import com.andbase.library.R;
 import com.andbase.library.app.adapter.AbFragmentPagerAdapter;
 import com.andbase.library.util.AbLogUtil;
 import com.andbase.library.view.sample.AbViewPager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -241,7 +240,7 @@ public class AbTopNavView extends LinearLayout {
         }
 
         if(tabTextColors==null || tabTextColors.length<2){
-            tabTextColors = new int[]{context.getResources().getColor(R.color.gray_text),context.getResources().getColor(R.color.blue_light)};
+            tabTextColors = new int[]{context.getResources().getColor(R.color.colorPrimary),context.getResources().getColor(R.color.gray_dark_2)};
         }
 
         if(position == 0){
@@ -293,5 +292,6 @@ public class AbTopNavView extends LinearLayout {
      */
     public void setTabIndicatorColor(int tabIndicatorColor) {
         this.tabIndicatorColor = tabIndicatorColor;
+        this.tabLayout.setSelectedTabIndicatorColor(this.tabIndicatorColor);
     }
 }

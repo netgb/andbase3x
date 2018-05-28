@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="app_bar_height">200dip</dimen>
+    <dimen name="tool_bar_height">54dip</dimen>
+    <dimen name="status_bar_height">22dip</dimen>
+    <dimen name="content_margin">16dip</dimen>
+</resources>

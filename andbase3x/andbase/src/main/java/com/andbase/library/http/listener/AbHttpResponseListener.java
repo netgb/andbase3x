@@ -2,11 +2,12 @@ package com.andbase.library.http.listener;
 
 import android.os.Handler;
 import android.os.Message;
+
 import com.andbase.library.http.AbHttpUtil;
 
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -60,7 +61,6 @@ public abstract class AbHttpResponseListener {
      * @param totalSize the total size
      */
     public void onProgress(long bytesWritten, long totalSize) {}
-
     
     /**
      * 开始消息.

@@ -1,8 +1,5 @@
 package com.andbase.library.view.sample;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -17,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
@@ -27,9 +23,12 @@ import com.andbase.library.view.listener.AbOnItemClickListener;
 import com.andbase.library.view.listener.AbOnPositionChangedListener;
 import com.andbase.library.view.listener.AbOnTouchListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -41,7 +40,7 @@ public class AbPlayView extends LinearLayout {
 	private Context context;
 
 	/** 内部的ViewPager. */
-	private AbInnerViewPager mViewPager;
+	private AbInnerViewPager viewPager;
 
 	/** 导航的布局. */
 	private LinearLayout navLinearLayout;
@@ -72,7 +71,7 @@ public class AbPlayView extends LinearLayout {
 	private ArrayList<View> mViewList = null;
 	
 	/** 适配器. */
-	private AbViewPagerAdapter mViewPagerAdapter = null;
+	private AbViewPagerAdapter viewPagerAdapter = null;
 	
 	/** 导航的点父View. */
 	private LinearLayout mNavLayoutParent = null;
@@ -118,9 +117,9 @@ public class AbPlayView extends LinearLayout {
 		
 		RelativeLayout mRelativeLayout = new RelativeLayout(context);
 
-		mViewPager = new AbInnerViewPager(context);
+		viewPager = new AbInnerViewPager(context);
 		//手动创建的ViewPager,如果用fragment必须调用setId()方法设置一个id
-		mViewPager.setId(R.id.view_pager);
+		viewPager.setId(R.id.view_pager);
 		//导航的点
 		mNavLayoutParent = new LinearLayout(context);
 		mNavLayoutParent.setPadding(0,5, 0, 5);
@@ -133,7 +132,7 @@ public class AbPlayView extends LinearLayout {
         lp1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM,RelativeLayout.TRUE);
         lp1.addRule(RelativeLayout.CENTER_HORIZONTAL,RelativeLayout.TRUE);
         lp1.addRule(RelativeLayout.CENTER_VERTICAL,RelativeLayout.TRUE);
-        mRelativeLayout.addView(mViewPager,lp1);
+        mRelativeLayout.addView(viewPager,lp1);
 		
 		RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM,RelativeLayout.TRUE);
@@ -141,10 +140,10 @@ public class AbPlayView extends LinearLayout {
 		addView(mRelativeLayout,new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 
         mViewList = new ArrayList<View>();
-		mViewPagerAdapter = new AbViewPagerAdapter(context,mViewList);
-		mViewPager.setAdapter(mViewPagerAdapter);
-		mViewPager.setFadingEdgeLength(0);
-		mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+		viewPagerAdapter = new AbViewPagerAdapter(context,mViewList);
+		viewPager.setAdapter(viewPagerAdapter);
+		viewPager.setFadingEdgeLength(0);
+		viewPager.setOnPageChangeListener(new OnPageChangeListener() {
 
 			@Override
 			public void onPageSelected(int position) {
@@ -197,7 +196,7 @@ public class AbPlayView extends LinearLayout {
 	 * 定位点的位置.
 	 */
 	public void makesurePosition() {
-		position = mViewPager.getCurrentItem();
+		position = viewPager.getCurrentItem();
 		for (int j = 0; j < count; j++) {
 			if (position == j) {
 				((ImageView)navLinearLayout.getChildAt(position)).setImageDrawable(displayDrawable);
@@ -285,7 +284,7 @@ public class AbPlayView extends LinearLayout {
 	 * 更新
 	 */
 	public void notifyDataSetChanged(){
-		mViewPagerAdapter.notifyDataSetChanged();
+		viewPagerAdapter.notifyDataSetChanged();
 		creatIndex();
 	}
 	
@@ -321,7 +320,7 @@ public class AbPlayView extends LinearLayout {
 		public void handleMessage(Message msg) {
 			if (msg.what==0) {
 				int count = mViewList.size();
-				int i = mViewPager.getCurrentItem();
+				int i = viewPager.getCurrentItem();
 				if(playingDirection==0){
 					if(i == count-1){
 						playingDirection = -1;
@@ -338,7 +337,7 @@ public class AbPlayView extends LinearLayout {
 					}
 				}
 				
-				mViewPager.setCurrentItem(i, true);
+				viewPager.setCurrentItem(i, true);
 				if(play){
 					handler.postDelayed(runnable, 5000);  
 				}
@@ -350,7 +349,7 @@ public class AbPlayView extends LinearLayout {
 	/** 用于轮播的线程. */
 	private Runnable runnable = new Runnable() {  
 	    public void run() {  
-	    	if(mViewPager!=null){
+	    	if(viewPager!=null){
 	    		handler.sendEmptyMessage(0);
 			} 
 	    }  
@@ -380,7 +379,7 @@ public class AbPlayView extends LinearLayout {
 	/**
 	 * 设置点击事件监听.
 	 *
-	 * @param onItemClickListener the new on item click listener
+	 * @param onItemClickListener
 	 */
 	public void setOnItemClickListener(AbOnItemClickListener onItemClickListener) {
 		mOnItemClickListener = onItemClickListener;
@@ -390,7 +389,7 @@ public class AbPlayView extends LinearLayout {
 	/**
 	 * 设置页面切换的监听器.
 	 *
-	 * @param onChangeListener the new on page change listener
+	 * @param onChangeListener
 	 */
     public void setOnPageChangeListener(AbOnPositionChangedListener onChangeListener) {
     	mChangeListener = onChangeListener;
@@ -399,7 +398,7 @@ public class AbPlayView extends LinearLayout {
     /**
      * 设置页面滑动的监听器.
      *
-     * @param onScrollListener the new on page scrolled listener
+     * @param onScrollListener
      */
     public void setOnPageScrolledListener(AbOnPositionChangedListener onScrollListener) {
     	mScrolledListener = onScrollListener;
@@ -408,7 +407,7 @@ public class AbPlayView extends LinearLayout {
     /**
      * 设置页面Touch的监听器.
      *
-     * @param onTouchListener the new on touch listener
+     * @param onTouchListener
      */
     public void setOnTouchListener(AbOnTouchListener onTouchListener){
     	mOnTouchListener = onTouchListener;
@@ -422,8 +421,8 @@ public class AbPlayView extends LinearLayout {
 	 * @param hideResId 未选择状态图
 	 */
 	public void setNavPageResources(int displayResId,int hideResId) {
-		this.displayDrawable = this.getResources().getDrawable(displayResId);
-		this.hideDrawable = this.getResources().getDrawable(hideResId);
+		this.displayDrawable = context.getDrawable(displayResId);
+		this.hideDrawable = context.getDrawable(hideResId);
 		creatIndex();
 	}
 	
@@ -431,16 +430,16 @@ public class AbPlayView extends LinearLayout {
 	/**
 	 * 获取这个滑动的ViewPager类.
 	 *
-	 * @return the view pager
+	 * @return
 	 */
 	public ViewPager getViewPager() {
-		return mViewPager;
+		return viewPager;
 	}
 	
 	/**
 	 * 获取当前的View的数量.
 	 *
-	 * @return the count
+	 * @return
 	 */
 	public int getCount() {
 		return mViewList.size();
@@ -449,34 +448,25 @@ public class AbPlayView extends LinearLayout {
 	/**
 	 * 设置页显示条的位置,在AddView前设置.
 	 *
-	 * @param horizontalGravity the nav horizontal gravity
+	 * @param horizontalGravity
 	 */
 	public void setNavHorizontalGravity(int horizontalGravity) {
 		navHorizontalGravity = horizontalGravity;
 	}
 	
 	/**
-	 * 如果外层有ScrollView需要设置.
+	 * 如果外层有ScrollView需要设置,解决滑动冲突.
 	 *
-	 * @param parentScrollView the new parent scroll view
+	 * @param parentScrollView
 	 */
 	public void setParentScrollView(ScrollView parentScrollView) {
-		this.mViewPager.setParentScrollView(parentScrollView);
+		this.viewPager.setParentScrollView(parentScrollView);
 	}
-	
-	/**
-	 * 如果外层有ListView需要设置.
-	 *
-	 * @param parentListView the new parent list view
-	 */
-	public void setParentListView(ListView parentListView) {
-		this.mViewPager.setParentListView(parentListView);
-	}
-	
+
 	/**
 	 * 设置导航点的背景.
 	 *
-	 * @param resid the new nav layout background
+	 * @param resid
 	 */
 	public void setNavLayoutBackground(int resid){
 		navLinearLayout.setBackgroundResource(resid);

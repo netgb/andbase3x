@@ -22,7 +22,7 @@ import com.andbase.library.view.dialog.AbSampleDialogFragment;
 
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -159,7 +159,7 @@ public class AbDialogUtil {
      * @param context the context
      */
     public static AbSampleDialogFragment showLoadingDialog(Context context,int indeterminateDrawable,String message) {
-        View view = View.inflate(context,R.layout.ab_loading_dialog,null);
+        View view = View.inflate(context,R.layout.view_loading_dialog,null);
         TextView textView = (TextView)view.findViewById(R.id.loading_text);
         ProgressBar progressBar = (ProgressBar)view.findViewById(R.id.loading_progress);
         if(message != null){
@@ -241,7 +241,7 @@ public class AbDialogUtil {
 	}
 
 	public static void showAlertDialog(final Context context,String message,String  button1Text,String button2Text,final View.OnClickListener onClickListener,final View.OnClickListener onClickListener2){
-		View view = View.inflate(context, R.layout.view_button_confirm_dialog,null);
+		View view = View.inflate(context, R.layout.view_confirm_dialog,null);
 		Button button1 =  (Button)view.findViewById(R.id.dialog_button1);
 		Button button2 =  (Button)view.findViewById(R.id.dialog_button2);
 		button1.setText(button1Text);
@@ -267,7 +267,7 @@ public class AbDialogUtil {
 	}
 
 	public static void showMessageDialog(final Context context,String title,String message){
-		View view = View.inflate(context, R.layout.view_button_confirm_dialog,null);
+		View view = View.inflate(context, R.layout.view_confirm_dialog,null);
 		Button button1 =  (Button)view.findViewById(R.id.dialog_button1);
 		Button button2 =  (Button)view.findViewById(R.id.dialog_button2);
 		button1.setText("确定");
@@ -275,7 +275,7 @@ public class AbDialogUtil {
 		TextView titleText =  (TextView)view.findViewById(R.id.dialog_title);
 		TextView messageText =  (TextView)view.findViewById(R.id.dialog_message);
 		titleText.setText(title);
-		messageText.setText(message.replace(" ",""));
+		messageText.setText(message);
 		AbDialogUtil.showAlertDialog(view);
 		button1.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -287,8 +287,24 @@ public class AbDialogUtil {
 
 	}
 
+	public static void showConfirmDialog(final Context context,String title, String message,View.OnClickListener onClickListener){
+		View view = View.inflate(context, R.layout.view_confirm_dialog,null);
+		Button button1 =  (Button)view.findViewById(R.id.dialog_button1);
+		Button button2 =  (Button)view.findViewById(R.id.dialog_button2);
+		button1.setText("确定");
+		button2.setVisibility(View.GONE);
+        TextView titleText =  (TextView)view.findViewById(R.id.dialog_title);
+		TextView messageText = (TextView)view.findViewById(R.id.dialog_message);
+        titleText.setText(title);
+		messageText.setText(message);
+		AbAlertDialogFragment fragment = AbDialogUtil.showAlertDialog(view);
+		fragment.setCancelable(false);
+		button1.setOnClickListener(onClickListener);
+
+	}
+
 	public static void showListDialog(final Context context,String[] list,int defaultPosition,final AdapterView.OnItemClickListener onItemClickListener){
-		View view = View.inflate(context, R.layout.view_dialog_list,null);
+		View view = View.inflate(context, R.layout.view_list_dialog,null);
 		final ListView listView = (ListView)view.findViewById(R.id.list);
 		listView.setAdapter(new ArrayAdapter<String>(context,R.layout.view_list_item_checked, list));
 		AbDialogUtil.showAlertDialog(view);

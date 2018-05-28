@@ -4,16 +4,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/16 13:27
  * Email 396196516@qq.com
- * Info AbBaseFragment 的适配器
+ * Info FragmentPagerAdapter 的适配器
  */
 public class AbFragmentPagerAdapter extends FragmentPagerAdapter {
 

@@ -1,11 +1,9 @@
 package com.andbase.library.image;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
+
 import com.andbase.library.R;
 import com.andbase.library.asynctask.AbTask;
 import com.andbase.library.asynctask.AbTaskItem;
@@ -15,9 +13,12 @@ import com.andbase.library.cache.image.AbImageCacheImpl;
 import com.andbase.library.util.AbLogUtil;
 import com.andbase.library.util.AbStrUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -28,7 +29,7 @@ public class AbImageLoader {
 	
     /** 上下文. */
     private Context context = null;
-    
+
     /** 图片缓存. */
     private AbImageCacheImpl imageCache;
 
@@ -89,11 +90,21 @@ public class AbImageLoader {
     public void display(final ImageView imageView,final String url,final int desiredWidth,final int desiredHeight){
 
 		if(AbStrUtil.isEmpty(url) || (url.indexOf("http://")==-1 && url.indexOf("https://")==-1 && url.indexOf("www.")==-1)){
-			return;
+            if(emptyImageResId > 0){
+                imageView.setImageResource(emptyImageResId);
+            }else{
+                imageView.setImageDrawable(null);
+            }
+		    return;
 		}
 
 		//要判断这个imageView的url有变化，如果没有变化才set
 		//有变化就取消，解决列表的重复利用View的问题
+		String  oldUrl = (String)imageView.getTag(R.id.image_view);
+		if(url.equals(oldUrl)){
+			return;
+		}
+
 		imageView.setTag(R.id.image_view,url);
 
 		download(url,desiredWidth,desiredHeight,new OnImageDownloadListener() {
@@ -104,6 +115,8 @@ public class AbImageLoader {
 				if(url.equals(oldUrl)){
                     if(emptyImageResId > 0){
                         imageView.setImageResource(emptyImageResId);
+                    }else{
+                        imageView.setImageDrawable(null);
                     }
 
 				}
@@ -160,13 +173,6 @@ public class AbImageLoader {
      * @param onImageDownloadListener 监听器
      */
     public void download(final String url,final int desiredWidth,final int desiredHeight,final OnImageDownloadListener onImageDownloadListener) {
-
-		if(AbStrUtil.isEmpty(url) || (url.indexOf("http://")==-1 && url.indexOf("https://")==-1 && url.indexOf("www.")==-1)){
-			if(onImageDownloadListener!=null){
-				onImageDownloadListener.onEmpty();
-			}
-			return;
-		}
 
     	final String cacheKey = imageCache.getCacheKey(url, desiredWidth, desiredHeight);
     	//先看内存
@@ -288,7 +294,7 @@ public class AbImageLoader {
 		 * On Empty.
 		 */
 		public void onEmpty();
-		
+
 		/**
 		 * On Loading.
 		 */

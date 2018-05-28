@@ -5,11 +5,19 @@
         android:supportsRtl="true">
 
         <activity
-            android:name="app.camera.CaptureActivity"
+            android:name=".app.activity.CaptureActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"></activity>
 
         <activity
-            android:name="app.camera.RecoderCameraActivity"
+            android:name=".app.activity.RecoderCameraActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+
+        <activity
+            android:name=".app.activity.AnalogClockActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+
+        <activity
+            android:name=".app.activity.ImageViewerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"></activity>
 
     </application>

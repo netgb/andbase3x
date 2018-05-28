@@ -1,1 +1,1 @@
-include ':app', ':andbase', ':basestyle'
+include ':app', ':andbase', ':andbase_style', ':andbase_extend'

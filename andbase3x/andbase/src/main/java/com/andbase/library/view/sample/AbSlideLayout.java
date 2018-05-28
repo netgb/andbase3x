@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import com.andbase.library.R;
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/20 13:17
  * Email 396196516@qq.com

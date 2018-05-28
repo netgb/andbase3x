@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="keyboard_bg_color">#EBEBEB</color>
-    <color name="keyboard_key_color">#A9A9A9</color>
-    <color name="black_bg">#FF2B2B2B</color>
-    <color name="white_text_70">#70FFFFFF</color>
-
-
-
 </resources>

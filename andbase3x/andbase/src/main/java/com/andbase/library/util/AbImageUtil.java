@@ -41,7 +41,7 @@ import android.widget.ImageView;
 import com.andbase.library.R;
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -484,6 +484,52 @@ public class AbImageUtil {
 		}
 		return resizeBmp;
 	}
+
+	/**
+	 * 裁剪图片  从顶部开始
+	 * @param bitmap
+	 * @param desiredWidth
+	 * @param desiredHeight
+	 * @param left
+	 * @param top
+	 * @return
+	 */
+	public static Bitmap getCutBitmap(Bitmap bitmap, int desiredWidth, int desiredHeight,int left,int top) {
+
+		if (!checkBitmap(bitmap)) {
+			return null;
+		}
+
+		if (!checkSize(desiredWidth, desiredHeight)) {
+			return null;
+		}
+
+		Bitmap resizeBmp = null;
+
+		try {
+			int width = bitmap.getWidth();
+			int height = bitmap.getHeight();
+
+			if (width > desiredWidth) {
+			} else {
+				desiredWidth = width;
+			}
+
+			if (height > desiredHeight) {
+			} else {
+				desiredHeight = height;
+			}
+
+			resizeBmp = Bitmap.createBitmap(bitmap, left, top, desiredWidth,desiredHeight);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (resizeBmp != bitmap) {
+				bitmap.recycle();
+			}
+		}
+		return resizeBmp;
+	}
 	
 	/**
 	 * 根据等比例缩放图片.
@@ -758,7 +804,7 @@ public class AbImageUtil {
 		ByteArrayOutputStream output = null;
 		try {
 			output = new ByteArrayOutputStream();
-			bitmap.compress(mCompressFormat, 70, output);
+			bitmap.compress(mCompressFormat, 100, output);
 			byte[] result = output.toByteArray();
 			size = result.length;
 		} catch (Exception e) {

@@ -2,15 +2,8 @@ package com.upu173.andbase.global;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import com.andbase.library.global.AbConstant;
-import com.andbase.library.http.AbHttpUtil;
-import com.andbase.library.http.listener.AbStringHttpResponseListener;
-import com.andbase.library.http.model.AbRequestParams;
-import com.andbase.library.http.model.AbResult;
-import com.andbase.library.util.AbFileUtil;
-import com.andbase.library.util.AbJsonUtil;
+import com.andbase.library.app.base.AbBaseActivity;
 import com.andbase.library.util.AbSharedUtil;
-import com.andbase.library.util.AbStrUtil;
 import com.upu173.andbase.R;
 
 /**
@@ -21,14 +14,13 @@ public class MyApplication extends Application {
 
     public SharedPreferences sharedPreferences = null;
 
-    /** 主题*/
-    public int themeId = -1;
+    /**当前主题的索引*/
+    public int themeIndex = 0;
 
-    public boolean isLogin = false;
+    public int[] themeArray = new int[]{R.style.AppThemeDefault,R.style.AppThemeGreen,R.style.AppThemeRed};
 
-    /**HTTP*/
-    public AbHttpUtil httpUtil;
-
+    /** 信息有变化 */
+    public boolean isThemeUpdate = false;
 
     @Override
     public void onCreate() {
@@ -39,30 +31,25 @@ public class MyApplication extends Application {
     }
 
     public void initTheme(){
-
-        themeId = sharedPreferences.getInt(AbConstant.THEME_ID,-1);
+        int themeId = sharedPreferences.getInt(AbBaseActivity.THEME_ID,-1);
         if(themeId==-1){
-            themeId = R.style.AppTheme1;
-            this.setTheme(themeId);
+            themeId = themeArray[themeIndex];
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(AbConstant.THEME_ID, themeId);
+            editor.putInt(AbBaseActivity.THEME_ID, themeId);
             editor.commit();
-
         }
+        this.setTheme(themeId);
     }
 
-    public void updateTheme(int themeId){
-        this.themeId = themeId;
+    public void updateTheme(int position){
+        this.themeIndex = position;
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(AbConstant.THEME_ID);
-        editor.putInt(AbConstant.THEME_ID, this.themeId);
+        editor.remove(AbBaseActivity.THEME_ID);
+        editor.putInt(AbBaseActivity.THEME_ID, themeArray[themeIndex]);
         editor.commit();
+        this.isThemeUpdate = true;
     }
 
-
-    public void logout(){
-        isLogin = false;
-    }
 
     @Override
     public void onTerminate() {

@@ -10,9 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by Administrator on 2017/1/16.
+ * Copyright upu173.com
+ * Author 还如一梦中
+ * Date 2017/6/16 13:27
+ * Email 396196516@qq.com
+ * Info  RecyclerView 分隔线
  */
-
 public class AbRecyclerViewDivider extends RecyclerView.ItemDecoration {
 
     private Paint paint;

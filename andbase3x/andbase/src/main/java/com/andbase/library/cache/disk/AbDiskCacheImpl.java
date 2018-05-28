@@ -2,26 +2,16 @@ package com.andbase.library.cache.disk;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.graphics.Bitmap;
 import android.os.SystemClock;
-import android.text.format.DateUtils;
 
 import com.andbase.library.cache.http.AbHttpCacheResponse;
-import com.andbase.library.cache.image.AbImageCacheImpl;
-import com.andbase.library.config.AbAppConfig;
+import com.andbase.library.app.global.AbAppConfig;
 import com.andbase.library.util.AbAppUtil;
 import com.andbase.library.util.AbDateUtil;
 import com.andbase.library.util.AbFileUtil;
-import com.andbase.library.util.AbImageUtil;
 import com.andbase.library.util.AbLogUtil;
 import com.andbase.library.util.AbStrUtil;
 import com.andbase.library.util.AbStreamUtil;
-
-import java.io.ByteArrayInputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,13 +20,17 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -454,7 +448,10 @@ public class AbDiskCacheImpl implements AbDiskCache {
             con.setDoInput(true);
 
             con.setRequestProperty("SecurityCode",AbAppConfig.httpSecurityCode);
-            con.setRequestProperty("Cookie", "JSESSIONID="+sessionId);
+            if(!AbStrUtil.isEmpty(sessionId)){
+                con.setRequestProperty("Cookie", "JSESSIONID="+sessionId);
+            }
+
             con.connect();
             is = con.getInputStream();
 

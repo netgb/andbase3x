@@ -1,15 +1,15 @@
 package com.andbase.library.util;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -29,7 +29,7 @@ public class AbJsonUtil {
 	public static String toJson(Object src) {
 		String json = null;
 		try {
-			Gson gson = gsonBuilder.create();
+			Gson gson = gsonBuilder.disableHtmlEscaping().create();
 			json = gson.toJson(src);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,15 +62,15 @@ public class AbJsonUtil {
 	 * @return
 	 */
 	public static <T> T fromJson(String json,TypeToken<T> typeToken) {
-		List<?> list = null;
+		Object obj = null;
 		try {
-			Gson gson = gsonBuilder.create();
+			Gson gson = gsonBuilder.disableHtmlEscaping().create();
 			Type type = typeToken.getType();
-			list = gson.fromJson(json,type);
+			obj = gson.fromJson(json,type);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return (T)list;
+		return (T)obj;
 	}
 	
 	/**
@@ -83,13 +83,14 @@ public class AbJsonUtil {
 	public static <T> T fromJson(String json,Class<T> clazz) {
 		Object obj = null;
 		try {
-			Gson gson = gsonBuilder.create();
+			Gson gson = gsonBuilder.disableHtmlEscaping().create();
 			obj = gson.fromJson(json,clazz);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return (T)obj;
 	}
+
 
 	/**
 	 * 设置日期格式

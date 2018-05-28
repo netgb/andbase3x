@@ -20,10 +20,16 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.andbase.library.R;
 
+/**
+ * Copyright upu173.com
+ * Author 还如一梦中
+ * Date 2016/6/14 17:54
+ * Email 396196516@qq.com
+ * Info 圆形ImageView
+ */
 public class AbCircleImageView extends AbFilterImageView {
 
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;

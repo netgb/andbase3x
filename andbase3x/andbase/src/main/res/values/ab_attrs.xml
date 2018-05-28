@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="colorPrimaryTranslucent" format="reference" />
+
     <declare-styleable name="AbAnalogClock">
         <attr name="dialDrawable" format="reference" />
         <attr name="hourDrawable" format="reference" />
@@ -44,6 +46,12 @@
         <attr name="autoAdjustTextPosition" format="boolean"/>
     </declare-styleable>
 
+    <declare-styleable name="AbCoordinatorTabLayout">
+        <attr name="contentScrim" format="color" />
+        <attr name="tabIndicatorColor" format="color" />
+        <attr name="tabTextColor" format="color" />
+    </declare-styleable>
+
     <!--透明渐变的TabView-->
     <declare-styleable name="AlphaTabView">
         <attr name="tabIconNormal" format="reference" />
@@ -55,5 +63,6 @@
         <attr name="badgeBackgroundColor" format="color" />
         <attr name="paddingTexwithIcon" format="dimension"/>
     </declare-styleable>
+
 
 </resources>

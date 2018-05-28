@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppThemeDefault" parent="@style/BaseAppTheme">
+
+        <!-- ActionBar的颜色 -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+
+        <!-- 随主题而改变的颜色（如CheckBox的颜色） -->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- 状态栏的颜色 -->
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+
+        <item name="colorPrimaryTranslucent">@color/color_primary_translucent</item>
+
+        <item name="android:scrollbarThumbVertical">@color/colorPrimary</item>
+
+    </style>
+
+    <style name="AppThemeGreen" parent="@style/BaseAppTheme">
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorAccent">@color/green_light</item>
+        <item name="colorPrimaryDark">@color/green</item>
+        <item name="colorPrimaryTranslucent">@color/green_translucent</item>
+        <item name="android:scrollbarThumbVertical">@color/green</item>
+    </style>
+
+    <style name="AppThemeRed" parent="@style/BaseAppTheme">
+        <item name="colorPrimary">@color/pink</item>
+        <item name="colorAccent">@color/pink_light</item>
+        <item name="colorPrimaryDark">@color/pink</item>
+        <item name="colorPrimaryTranslucent">@color/pink_translucent</item>
+        <item name="android:scrollbarThumbVertical">@color/pink</item>
+
+    </style>
+
+
+</resources>

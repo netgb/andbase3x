@@ -4,12 +4,12 @@ package com.andbase.library.app.base;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.andbase.library.http.AbHttpUtil;
-import com.andbase.library.image.AbImageLoader;
+import com.andbase.library.R;
+import com.andbase.library.util.AbColorUtil;
 
 
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/16 13:27
  * Email 396196516@qq.com
@@ -19,26 +19,20 @@ public class AbBaseFragment extends Fragment {
 
     public AbBaseActivity activity;
 
-    /** 当Activity结束会中止请求*/
-    public AbHttpUtil httpUtil = null;
+    public AbBaseFragment() {
 
-    /** 当Activity结束会中止请求*/
-    public AbImageLoader imageLoader = null;
-
+    }
 
     @Override
     public void onAttach(Context context) {
         this.activity = (AbBaseActivity)context;
-        this.httpUtil = this.activity.httpUtil;
-        this.imageLoader = this.activity.imageLoader;
         super.onAttach(context);
     }
 
     @Override
     public void onDetach() {
         this.activity = null;
-        this.httpUtil = null;
-        this.imageLoader = null;
         super.onDetach();
     }
+
 }

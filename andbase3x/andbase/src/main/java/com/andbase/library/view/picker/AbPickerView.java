@@ -1,9 +1,6 @@
 
 package com.andbase.library.view.picker;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -11,7 +8,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Layout;
@@ -28,8 +24,11 @@ import android.widget.Scroller;
 import com.andbase.library.util.AbGraphicUtil;
 import com.andbase.library.util.AbViewUtil;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
@@ -48,9 +47,6 @@ public class AbPickerView extends View {
 
 	/** Items text color. */
 	private static final int ITEMS_TEXT_COLOR = 0xFF000000;
-
-	/** Top and bottom shadows colors. */
-	private static int[] SHADOWS_COLORS = new int[] { 0x00AAAAAA, 0x00AAAAAA, 0x00AAAAAA };
 
 	/** Label offset. */
 	private static final int LABEL_OFFSET = 8;
@@ -128,37 +124,19 @@ public class AbPickerView extends View {
 	private Drawable centerSelectDrawable;
 	
 	/** 中间覆盖条的颜色，如果没有设置centerDrawable时才生效. */
-	private int[] centerSelectGradientColors = new int[] {0x70E0E0E0,0x70E0E0E0, 0x70F5F5F5};
+	private int[] centerSelectGradientColors = new int[] {0x706ED9FF,0x7065C7EA, 0x706ED9FF};
 	
 	/** The center select stroke width. */
 	private int centerSelectStrokeWidth  = 1;
 	
 	/** The center select stroke color. */
-	private int centerSelectStrokeColor  = 0x70616161;
+	private int centerSelectStrokeColor  = 0x706ED9FF;
 	
-	/** Shadows drawables. */
-	private GradientDrawable topShadow;
-    
-    /** The bottom shadow. */
-    private GradientDrawable bottomShadow;
-    
     /** Current value. */
 	private int valueTextColor = 0xF0000000;
 	
 	/** Current label text color. */
 	private int labelTextColor = 0x616161;
-	
-	/** 轮子的背景 底部的颜色 */
-	private int[] bottomGradientColors = new int[] { 0xE0E0E0, 0xFFF, 0xFFF };
-	
-	/** 轮子的背景 顶部的颜色  */
-	private int[] topGradientColors = new int[] { 0xFFF, 0xFFF,0xE0E0E0};
-	
-	/** The top stroke width. */
-	private int topStrokeWidth  = 1;
-	
-	/** The top stroke color. */
-	private int topStrokeColor  = 0xFFE0E0E0;
 	
 	/** 值的文字大小. */
 	private int valueTextSize = 15;
@@ -172,44 +150,25 @@ public class AbPickerView extends View {
 	/** 中间覆盖条高度. */
 	private int additionalItemHeight = 30;
 	
-	/**
-	 * Constructor.
-	 *
-	 * @param context the context
-	 * @param attrs the attrs
-	 * @param defStyle the def style
-	 */
+
 	public AbPickerView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initData(context);
 	}
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context the context
-	 * @param attrs the attrs
-	 */
+
 	public AbPickerView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initData(context);
 	}
 
-	/**
-	 * Constructor.
-	 *
-	 * @param context the context
-	 */
+
 	public AbPickerView(Context context) {
 		super(context);
 		initData(context);
 	}
 
-	/**
-	 * Initializes class data.
-	 *
-	 * @param context the context
-	 */
+
 	private void initData(Context context) {
 		this.context = context;
 		gestureDetector = new GestureDetector(context, gestureListener);
@@ -220,20 +179,12 @@ public class AbPickerView extends View {
 		labelTextSize = AbViewUtil.scaleValue(this.context,15);
 	}
 
-	/**
-	 * Gets wheel adapter.
-	 *
-	 * @return the adapter
-	 */
+
 	public AbPickerAdapter getAdapter() {
 		return adapter;
 	}
 
-	/**
-	 * Sets wheel adapter.
-	 *
-	 * @param adapter the new wheel adapter
-	 */
+
 	public void setAdapter(AbPickerAdapter adapter) {
 		this.adapter = adapter;
 		invalidateLayouts();
@@ -241,49 +192,29 @@ public class AbPickerView extends View {
 		invalidate();
 	}
 
-	/**
-	 * Set the the specified scrolling interpolator.
-	 *
-	 * @param interpolator the interpolator
-	 */
+
 	public void setInterpolator(Interpolator interpolator) {
 		scroller.forceFinished(true);
 		scroller = new Scroller(getContext(), interpolator);
 	}
 
-	/**
-	 * Gets count of visible items.
-	 *
-	 * @return the count of visible items
-	 */
+
 	public int getVisibleItems() {
 		return visibleItems;
 	}
 
-	/**
-	 * Sets count of visible items.
-	 *
-	 * @param count the new count
-	 */
+
 	public void setVisibleItems(int count) {
 		visibleItems = count;
 		invalidate();
 	}
 
-	/**
-	 * Gets label.
-	 *
-	 * @return the label
-	 */
+
 	public String getLabel() {
 		return label;
 	}
 
-	/**
-	 * Sets label.
-	 *
-	 * @param newLabel the label to set
-	 */
+
 	public void setLabel(String newLabel) {
 		if (label == null || !label.equals(newLabel)) {
 			label = newLabel;
@@ -292,86 +223,53 @@ public class AbPickerView extends View {
 		}
 	}
 
-	/**
-	 * Adds wheel changing listener.
-	 *
-	 * @param listener the listener
-	 */
+
 	public void addChangingListener(AbOnPickerChangedListener listener) {
 		changingListeners.add(listener);
 	}
 
-	/**
-	 * Removes wheel changing listener.
-	 *
-	 * @param listener the listener
-	 */
+
 	public void removeChangingListener(AbOnPickerChangedListener listener) {
 		changingListeners.remove(listener);
 	}
 
-	/**
-	 * Notifies changing listeners.
-	 *
-	 * @param oldValue  the old wheel value
-	 * @param newValue  the new wheel value
-	 */
+
 	protected void notifyChangingListeners(int oldValue, int newValue) {
 		for (AbOnPickerChangedListener listener : changingListeners) {
 			listener.onChanged(this, oldValue, newValue);
 		}
 	}
 
-	/**
-	 * Adds wheel scrolling listener.
-	 *
-	 * @param listener the listener
-	 */
+
 	public void addScrollingListener(AbOnPickerScrollListener listener) {
 		scrollingListeners.add(listener);
 	}
 
-	/**
-	 * Removes wheel scrolling listener.
-	 *
-	 * @param listener the listener
-	 */
+
 	public void removeScrollingListener(AbOnPickerScrollListener listener) {
 		scrollingListeners.remove(listener);
 	}
 
-	/**
-	 * Notifies listeners about starting scrolling.
-	 */
+
 	protected void notifyScrollingListenersAboutStart() {
 		for (AbOnPickerScrollListener listener : scrollingListeners) {
 			listener.onScrollingStarted(this);
 		}
 	}
 
-	/**
-	 * Notifies listeners about ending scrolling.
-	 */
+
 	protected void notifyScrollingListenersAboutEnd() {
 		for (AbOnPickerScrollListener listener : scrollingListeners) {
 			listener.onScrollingFinished(this);
 		}
 	}
 
-	/**
-	 * Gets current value.
-	 *
-	 * @return the current value
-	 */
+
 	public int getCurrentItem() {
 		return currentItem;
 	}
 
-	/**
-	 * Sets the current item. Does nothing when index is wrong.
-	 * @param index the item index
-	 * @param animated the animation flag
-	 */
+
 	public void setCurrentItem(int index, boolean animated) {
 		if (adapter == null || adapter.getItemsCount() == 0) {
 			return; // throw?
@@ -472,38 +370,6 @@ public class AbPickerView extends View {
 		 LinearGradient 用来进行梯度渲染，RadialGradient 用来进行环形渲染，
 		 SweepGradient 
 		 用来进行梯度渲染，ComposeShader则是一个 混合渲染，可以和其它几个子类组合起来使用。 */
-
-		//上边界渐变层
-		if (topShadow == null) {
-			topShadow = new GradientDrawable(Orientation.TOP_BOTTOM, SHADOWS_COLORS);
-		}
-		//下边界渐变层
-		if (bottomShadow == null) {
-			bottomShadow = new GradientDrawable(Orientation.BOTTOM_TOP, SHADOWS_COLORS);
-		}
-		
-		if(this.getBackground()==null){
-			//原来用颜色渐变实现setBackgroundDrawable(layerDrawable);
-			//底部的颜色
-			GradientDrawable mGradientDrawable1 = new GradientDrawable(Orientation.TOP_BOTTOM, topGradientColors);
-			GradientDrawable mGradientDrawable2 = new GradientDrawable(Orientation.BOTTOM_TOP, bottomGradientColors);
-			
-			mGradientDrawable1.setStroke(topStrokeWidth, topStrokeColor);
-			mGradientDrawable1.setShape(GradientDrawable.RECTANGLE);
-			mGradientDrawable2.setShape(GradientDrawable.RECTANGLE);
-			mGradientDrawable1.setGradientType(GradientDrawable.LINEAR_GRADIENT );
-			mGradientDrawable2.setGradientType(GradientDrawable.LINEAR_GRADIENT );
-
-			GradientDrawable[] mDrawables = new GradientDrawable[2];
-			mDrawables[0] = mGradientDrawable1;
-			mDrawables[1] = mGradientDrawable2;
-			
-			LayerDrawable layerDrawable = new LayerDrawable(mDrawables); 
-			layerDrawable.setLayerInset(0, 0, 0, 0, 0);  //第一个参数0代表数组的第1个元素
-			layerDrawable.setLayerInset(1, 4, 1, 4, 1);  //第一个参数1代表数组的第2个元素
-			setBackgroundDrawable(layerDrawable);
-		}
-		
 		
 	}
 
@@ -730,16 +596,6 @@ public class AbPickerView extends View {
 		}
 	}
 
-	/**
-	 * TODO.
-	 *
-	 * @version v1.0
-	 * @param widthMeasureSpec the width measure spec
-	 * @param heightMeasureSpec the height measure spec
-	 * @see View#onMeasure(int, int)
-	 * @author: amsoft.cn
-	 * @date：2013-6-17 上午9:04:47
-	 */
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -762,15 +618,6 @@ public class AbPickerView extends View {
 		setMeasuredDimension(width, height);
 	}
 
-	/**
-	 * TODO.
-	 *
-	 * @version v1.0
-	 * @param canvas the canvas
-	 * @see View#onDraw(Canvas)
-	 * @author: amsoft.cn
-	 * @date：2013-6-17 上午9:04:47
-	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -792,27 +639,8 @@ public class AbPickerView extends View {
 		}
 
 		drawCenterRect(canvas);
-		drawShadows(canvas);
 	}
 
-	/**
-	 * Draws shadows on top and bottom of control.
-	 *
-	 * @param canvas the canvas for drawing
-	 */
-	private void drawShadows(Canvas canvas) {
-		topShadow.setBounds(0, 0, getWidth(), getHeight() / visibleItems);
-		topShadow.draw(canvas);
-
-		bottomShadow.setBounds(0, getHeight() - getHeight() / visibleItems, getWidth(), getHeight());
-		bottomShadow.draw(canvas);
-	}
-
-	/**
-	 * Draws value and label layout.
-	 *
-	 * @param canvas the canvas for drawing
-	 */
 	private void drawValue(Canvas canvas) {
 		valuePaint.setColor(valueTextColor);
 		valuePaint.drawableState = getDrawableState();
@@ -870,16 +698,6 @@ public class AbPickerView extends View {
 		centerSelectDrawable.draw(canvas);
 	}
 
-	/**
-	 * TODO.
-	 *
-	 * @version v1.0
-	 * @param event the event
-	 * @return true, if successful
-	 * @see View#onTouchEvent(MotionEvent)
-	 * @author: amsoft.cn
-	 * @date：2013-6-17 上午9:04:47
-	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		AbPickerAdapter adapter = getAdapter();

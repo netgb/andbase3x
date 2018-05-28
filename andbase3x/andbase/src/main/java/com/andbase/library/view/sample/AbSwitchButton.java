@@ -31,19 +31,22 @@ import android.widget.CompoundButton;
 import com.andbase.library.R;
 import com.andbase.library.util.AbColorUtil;
 
-
 /**
- * SwitchButton
- * 好看的开关按钮
+ * Copyright upu173.com
+ * Author 还如一梦中
+ * Date 2017/4/24 13:27
+ * Email 396196516@qq.com
+ * Info 好看的开关按钮
  */
 
 public class AbSwitchButton extends CompoundButton {
+
+    private Context context;
     public static final float DEFAULT_BACK_MEASURE_RATIO = 1.8f;
     public static final int DEFAULT_THUMB_SIZE_DP = 20;
     public static final int DEFAULT_THUMB_MARGIN_DP = 2;
     public static final int DEFAULT_TEXT_MARGIN_DP = 2;
     public static final int DEFAULT_ANIMATION_DURATION = 250;
-    public static final int DEFAULT_TINT_COLOR = 0x327FC2;
 
     private static int[] CHECKED_PRESSED_STATE = new int[]{android.R.attr.state_checked, android.R.attr.state_enabled, android.R.attr.state_pressed};
     private static int[] UNCHECKED_PRESSED_STATE = new int[]{-android.R.attr.state_checked, android.R.attr.state_enabled, android.R.attr.state_pressed};
@@ -92,16 +95,19 @@ public class AbSwitchButton extends CompoundButton {
 
     public AbSwitchButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
         init(attrs);
     }
 
     public AbSwitchButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init(attrs);
     }
 
     public AbSwitchButton(Context context) {
         super(context);
+        this.context = context;
         init(null);
     }
 
@@ -207,13 +213,7 @@ public class AbSwitchButton extends CompoundButton {
         mIsThumbUseDrawable = mThumbDrawable != null;
         mTintColor = tintColor;
         if (mTintColor == 0) {
-            TypedValue typedValue = new TypedValue();
-            boolean found = getContext().getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
-            if (found) {
-                mTintColor = typedValue.data;
-            } else {
-                mTintColor = DEFAULT_TINT_COLOR;
-            }
+            mTintColor = AbColorUtil.getAttrColor(context,R.attr.colorPrimary);
         }
         if (!mIsThumbUseDrawable && mThumbColor == null) {
             mThumbColor = AbColorUtil.generateThumbColorWithTintColor(mTintColor);

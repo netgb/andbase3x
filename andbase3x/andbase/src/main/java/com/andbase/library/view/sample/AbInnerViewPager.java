@@ -6,26 +6,21 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
-import android.widget.ListView;
 import android.widget.ScrollView;
 
 
-
 /**
- * Copyright amsoft.cn
+ * Copyright upu173.com
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
- * Info ListView或者scrollView 与内部ViewPager滑动的XY冲突
+ * Info scrollView与内部ViewPager滑动的XY冲突
  */
 public class AbInnerViewPager extends ViewPager {
 
 	/** 父滚动布局 */
 	private ScrollView parentScrollView;
-	
-	/** 父列表布局. */
-	private ListView parentListView;
-	
+
 	/** 手势. */
 	private GestureDetector mGestureDetector;
 	
@@ -69,11 +64,7 @@ public class AbInnerViewPager extends ViewPager {
 		if(parentScrollView!=null){
 			parentScrollView.requestDisallowInterceptTouchEvent(!flag);
 		}
-		
-		if(parentListView!=null){
-			parentListView.requestDisallowInterceptTouchEvent(!flag);
-		}
-		
+
 	}
 
 	/**
@@ -83,15 +74,7 @@ public class AbInnerViewPager extends ViewPager {
 	public void setParentScrollView(ScrollView parentScrollView) {
 		this.parentScrollView = parentScrollView;
 	}
-	
-	/**
-	 * 如果外层有ListView需要设置.
-	 * @param parentListView the new parent scroll view
-	 */
-	public void setParentListView(ListView parentListView) {
-		this.parentListView = parentListView;
-	}
-	
+
 	
 	/**
 	 * 手势类.
