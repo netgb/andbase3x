@@ -1,11 +1,11 @@
 package com.andbase.library.asynctask;
 
+import android.os.Handler;
+import android.os.Message;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
-
-import android.os.Handler;
-import android.os.Message;
 
 /**
  * Copyright upu173.com
@@ -26,7 +26,7 @@ public class AbTaskPool{
 	/**  存放返回的任务结果. */
     private static HashMap<String,Object> result;
 	
-	/** 下载完成后的消息句柄. */
+	/** 执行完成后的消息句柄. */
     private static Handler handler = new Handler() { 
         @Override 
         public void handleMessage(Message msg) { 

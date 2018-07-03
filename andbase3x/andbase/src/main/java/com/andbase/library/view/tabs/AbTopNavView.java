@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.andbase.library.R;
 import com.andbase.library.app.adapter.AbFragmentPagerAdapter;
+import com.andbase.library.util.AbColorUtil;
 import com.andbase.library.util.AbLogUtil;
 import com.andbase.library.view.sample.AbViewPager;
 
@@ -48,7 +49,7 @@ public class AbTopNavView extends LinearLayout {
     private AbFragmentPagerAdapter fragmentPagerAdapter = null;
 
     /** tab的文字. */
-    private String[] tabTextList = null;
+    private String[] tabTextArray = null;
 
     /** tab的图标. */
     private List<Drawable[]> tabDrawableList = null;
@@ -178,14 +179,32 @@ public class AbTopNavView extends LinearLayout {
         this.tabLayout.setBackgroundResource(resId);
     }
 
+
     /**
      * 设置数据
      * @param tabTextList
+     * @param tabDrawableList
      * @param tabFragmentList
      */
-    public void setTabs(String[] tabTextList,List<Drawable[]> tabDrawableList,List<Fragment> tabFragmentList){
+    public void setTabs(List<String> tabTextList,List<Drawable[]> tabDrawableList,List<Fragment> tabFragmentList){
+        String[] tabArray = new String[tabTextList.size()];
+        int i = 0;
+        for(String text:tabTextList){
+            tabArray[i] = text;
+            i++;
+        }
+        setTabs(tabArray,tabDrawableList,tabFragmentList);
+    }
+
+    /**
+     * 设置数据
+     * @param tabTextArray
+     * @param tabDrawableList
+     * @param tabFragmentList
+     */
+    public void setTabs(String[] tabTextArray,List<Drawable[]> tabDrawableList,List<Fragment> tabFragmentList){
         this.tabDrawableList = tabDrawableList;
-        setTabs(tabTextList,tabFragmentList);
+        setTabs(tabTextArray,tabFragmentList);
     }
 
     /**
@@ -193,11 +212,26 @@ public class AbTopNavView extends LinearLayout {
      * @param tabTextList
      * @param tabFragmentList
      */
-    public void setTabs(String[] tabTextList,List<Fragment> tabFragmentList){
-        this.tabTextList = tabTextList;
+    public void setTabs(List<String> tabTextList,List<Fragment> tabFragmentList){
+        String[] tabTextArray = new String[tabTextList.size()];
+        int i = 0;
+        for(String text:tabTextList){
+            tabTextArray[i] = text;
+            i++;
+        }
+        setTabs(tabTextArray,tabFragmentList);
+    }
+
+    /**
+     * 设置数据
+     * @param tabTextArray
+     * @param tabFragmentList
+     */
+    public void setTabs(String[] tabTextArray,List<Fragment> tabFragmentList){
+        this.tabTextArray = tabTextArray;
         this.tabFragmentList = tabFragmentList;
         this.tabTextViewList = new ArrayList<TextView>();
-        fragmentPagerAdapter = new AbFragmentPagerAdapter(fragmentManager,tabTextList, tabFragmentList);
+        fragmentPagerAdapter = new AbFragmentPagerAdapter(fragmentManager,tabTextArray, tabFragmentList);
 
         //viewpager加载adapter
         viewPager.setAdapter(fragmentPagerAdapter);
@@ -207,7 +241,7 @@ public class AbTopNavView extends LinearLayout {
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorColor(tabIndicatorColor);
         //为TabLayout添加tab名称
-        for(int i=0;i<tabTextList.length;i++){
+        for(int i=0;i<tabTextArray.length;i++){
             TabLayout.Tab tab = tabLayout.getTabAt(i);
             tab.setCustomView(getTabView(i));
         }
@@ -222,12 +256,12 @@ public class AbTopNavView extends LinearLayout {
     public View getTabView(int position){
         View view = View.inflate(context,R.layout.ab_item_tab_view,null);
         TextView tabText = (TextView)view.findViewById(R.id.tab_text);
-        tabText.setText(this.tabTextList[position]);
+        tabText.setText(this.tabTextArray[position]);
         tabText.setTextSize(this.tabTextSize);
         this.tabTextViewList.add(tabText);
 
         ImageView tabIcon = (ImageView)view.findViewById(R.id.tab_icon);
-        if(this.tabDrawableList!=null && this.tabDrawableList.size()==this.tabTextList.length){
+        if(this.tabDrawableList!=null && this.tabDrawableList.size() == this.tabTextArray.length){
             tabIcon.setVisibility(View.VISIBLE);
             Drawable[] drawables = tabDrawableList.get(position);
             if(position == 0){
@@ -240,7 +274,7 @@ public class AbTopNavView extends LinearLayout {
         }
 
         if(tabTextColors==null || tabTextColors.length<2){
-            tabTextColors = new int[]{context.getResources().getColor(R.color.colorPrimary),context.getResources().getColor(R.color.gray_dark_2)};
+            tabTextColors = new int[]{AbColorUtil.getAttrColor(context,R.attr.colorPrimary),context.getResources().getColor(R.color.gray_dark_2)};
         }
 
         if(position == 0){

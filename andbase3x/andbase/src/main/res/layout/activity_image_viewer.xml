@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimary"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -17,9 +16,10 @@
             android:layout_height="match_parent"/>
 
         <LinearLayout
+            android:id="@+id/toobar_layout"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/tool_bar_height"
-            android:background="?attr/colorPrimaryTranslucent"
+            android:alpha="0.5"
             android:orientation="horizontal">
 
             <ImageView

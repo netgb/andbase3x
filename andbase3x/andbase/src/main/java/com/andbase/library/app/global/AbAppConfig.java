@@ -9,15 +9,6 @@ package com.andbase.library.app.global;
  */
 public class AbAppConfig {
 	
-	/**  UI设计的基准宽度. */
-	public static int UI_WIDTH = 720;
-	
-	/**  UI设计的基准高度. */
-	public static int UI_HEIGHT = 1280;
-	
-	/**  UI设计的密度. */
-	public static int UI_DENSITY = 2;
-	
 	/** 默认 SharePreferences文件名. */
 	public static String SHARED_PATH = "app_share";
 	

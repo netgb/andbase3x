@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.andbase.library.util.AbViewUtil;
+
 /**
  * Copyright upu173.com
  * Author 还如一梦中
@@ -50,7 +52,12 @@ public class AbRecyclerViewDivider extends RecyclerView.ItemDecoration {
      */
     public AbRecyclerViewDivider(Context context, int orientation, int dividerHeight, int dividerColor) {
         this(context, orientation);
-        this.dividerHeight = dividerHeight;
+        if(dividerHeight == 1){
+            this.dividerHeight = 1;
+        }else{
+            this.dividerHeight = (int) AbViewUtil.dip2px(context,dividerHeight);
+        }
+
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(dividerColor);
         paint.setStyle(Paint.Style.FILL);

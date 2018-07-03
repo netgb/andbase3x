@@ -23,7 +23,7 @@ public class AbTaskMultiQueue {
 	private List<AbTaskQueue> taskQueueList;
 
 	/**
-	 * 构造图片下载器.
+	 * 构造多任务器.
 	 */
 	public AbTaskMultiQueue() {
 		this.taskQueueList = new ArrayList<AbTaskQueue>();

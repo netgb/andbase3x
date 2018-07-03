@@ -17,7 +17,7 @@ public class MyApplication extends Application {
     /**当前主题的索引*/
     public int themeIndex = 0;
 
-    public int[] themeArray = new int[]{R.style.AppThemeDefault,R.style.AppThemeGreen,R.style.AppThemeRed};
+    public int[] themeArray = new int[]{R.style.AppThemeBlue,R.style.AppThemeGreen,R.style.AppThemeRed};
 
     /** 信息有变化 */
     public boolean isThemeUpdate = false;

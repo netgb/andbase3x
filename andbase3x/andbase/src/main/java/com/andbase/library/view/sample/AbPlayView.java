@@ -429,10 +429,9 @@ public class AbPlayView extends LinearLayout {
 
 	/**
 	 * 获取这个滑动的ViewPager类.
-	 *
 	 * @return
 	 */
-	public ViewPager getViewPager() {
+	public AbInnerViewPager getViewPager() {
 		return viewPager;
 	}
 	
@@ -452,15 +451,6 @@ public class AbPlayView extends LinearLayout {
 	 */
 	public void setNavHorizontalGravity(int horizontalGravity) {
 		navHorizontalGravity = horizontalGravity;
-	}
-	
-	/**
-	 * 如果外层有ScrollView需要设置,解决滑动冲突.
-	 *
-	 * @param parentScrollView
-	 */
-	public void setParentScrollView(ScrollView parentScrollView) {
-		this.viewPager.setParentScrollView(parentScrollView);
 	}
 
 	/**

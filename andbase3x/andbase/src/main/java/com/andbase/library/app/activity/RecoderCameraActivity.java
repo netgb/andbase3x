@@ -157,7 +157,7 @@ public class RecoderCameraActivity extends AbBaseActivity implements SurfaceHold
 	 * 暂停,将相机关闭.
 	 */
 	@Override
-	protected void onPause() {
+	public void onPause() {
         if(isRecoding){
             startBtn.setBackgroundResource(R.drawable.ic_start_record);
             isRecoding = false;
@@ -173,7 +173,7 @@ public class RecoderCameraActivity extends AbBaseActivity implements SurfaceHold
 	 * 恢复.
 	 */
 	@Override
-	protected void onResume() {
+	public void onResume() {
 
 		//检查权限
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

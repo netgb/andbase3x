@@ -47,30 +47,16 @@ public class SmileProgressDrawable extends Drawable implements Animatable {
         this.animationDuration = animationDuration;
     }
 
-    /**
-     * The duration of a single progress spin in milliseconds.
-     */
     private int animationDuration = 2332;
 
     public float mRotationCount;
 
-    /**
-     * The number of points in the progress "star".
-     */
     private static final float NUM_POINTS = 5f;
-    /**
-     * The list of animators operating on this drawable.
-     */
+
     private final ArrayList<Animation> mAnimators = new ArrayList<Animation>();
 
-    /**
-     * The indicator ring, used to manage animation state.
-     */
     private final Smile mSmile;
 
-    /**
-     * Canvas rotation in degrees.
-     */
     private float mRotation = 0;
 
     private View mParent;

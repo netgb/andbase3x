@@ -4,6 +4,7 @@ package com.andbase.library.app.activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andbase.library.R;
@@ -31,19 +32,21 @@ public class ImageViewerActivity extends AbBaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //设置布局
-        setContentView(R.layout.activity_image_viewer);
+        View contentView = View.inflate(this,R.layout.activity_image_viewer,null);
+        contentView.setBackgroundColor(colorPrimary);
+        setContentView(contentView);
 
         urlPath = getIntent().getStringArrayListExtra("PATH");
         int position = getIntent().getIntExtra("POSITION",0);
-
-        photoImageViewPager = (AbPhotoImageViewPager) findViewById(R.id.view_pager);
+        LinearLayout toobarLayout =  (LinearLayout) contentView.findViewById(R.id.toobar_layout);
+        toobarLayout.setBackgroundColor(colorPrimary);
+        photoImageViewPager = (AbPhotoImageViewPager) contentView.findViewById(R.id.view_pager);
         photoImageViewPagerAdapter = new AbPhotoImageViewPagerAdapter(this,photoImageViewPager,urlPath,imageLoader);
         photoImageViewPager.setAdapter(photoImageViewPagerAdapter);
-        final TextView  imageCount = (TextView) this.findViewById(R.id.image_count);
+        final TextView  imageCount = (TextView) contentView.findViewById(R.id.image_count);
         imageCount.setText((position+1)+"/"+urlPath.size());
 
-        ImageView backBtn = (ImageView) this.findViewById(R.id.back_btn);
+        ImageView backBtn = (ImageView) contentView.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

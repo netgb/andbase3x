@@ -12,7 +12,7 @@ import com.andbase.library.cache.disk.AbDiskCacheImpl;
 import com.andbase.library.cache.http.AbHttpCacheResponse;
 import com.andbase.library.app.global.AbAppConfig;
 import com.andbase.library.http.entity.mine.content.StringBody;
-import com.andbase.library.http.listener.AbBinaryHttpResponseListener;
+import com.andbase.library.http.listener.AbByteArrayHttpResponseListener;
 import com.andbase.library.http.listener.AbFileHttpResponseListener;
 import com.andbase.library.http.listener.AbHttpHeaderCreateListener;
 import com.andbase.library.http.listener.AbHttpResponseListener;
@@ -590,7 +590,9 @@ public class AbHttpUtil {
                     //请求头
                     if(httpHeaderCreateListener!=null){
                         HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
-                        headerMap.putAll(headerMore);
+                        if(headerMore!= null){
+                            headerMap.putAll(headerMore);
+                        }
                     }
                     Iterator iterator = headerMap.entrySet().iterator();
                     while (iterator.hasNext()) {
@@ -710,7 +712,9 @@ public class AbHttpUtil {
                     //请求头
                     if(httpHeaderCreateListener!=null){
                         HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
-                        headerMap.putAll(headerMore);
+                        if(headerMore!= null){
+                            headerMap.putAll(headerMore);
+                        }
                     }
                     Iterator iterator = headerMap.entrySet().iterator();
                     while (iterator.hasNext()) {
@@ -833,7 +837,10 @@ public class AbHttpUtil {
             //请求头
             if(httpHeaderCreateListener!=null){
                 HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
-                this.headerMap.putAll(headerMore);
+                if(headerMore!= null){
+                    this.headerMap.putAll(headerMore);
+                }
+
             }
 
             Iterator iterator = this.headerMap.entrySet().iterator();
@@ -880,9 +887,9 @@ public class AbHttpUtil {
                     resultString = readString(httpURLConnection ,responseListener,true);
                     stringHttpResponseListener.sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, resultString);
 
-                }else if(responseListener instanceof AbBinaryHttpResponseListener){
+                }else if(responseListener instanceof AbByteArrayHttpResponseListener){
                     //字节
-                    AbBinaryHttpResponseListener binaryHttpResponseListener =  (AbBinaryHttpResponseListener)responseListener;
+                    AbByteArrayHttpResponseListener binaryHttpResponseListener =  (AbByteArrayHttpResponseListener)responseListener;
                     byte[] resultByte = readByteArray(httpURLConnection ,responseListener,true);
                     binaryHttpResponseListener.sendSuccessMessage(AbHttpStatus.SUCCESS_CODE, resultByte);
 
@@ -981,7 +988,9 @@ public class AbHttpUtil {
             //请求头
             if(httpHeaderCreateListener!=null){
                 HashMap<String,String> headerMore = httpHeaderCreateListener.onCreateHeader(httpUrl,requestMethod.toLowerCase());
-                this.headerMap.putAll(headerMore);
+                if(headerMore!= null){
+                    headerMap.putAll(headerMore);
+                }
             }
             Iterator iterator = this.headerMap.entrySet().iterator();
             while (iterator.hasNext()) {
@@ -1026,10 +1035,10 @@ public class AbHttpUtil {
                     AbStringHttpResponseListener stringHttpResponseListener =  (AbStringHttpResponseListener)responseListener;
                     stringHttpResponseListener.onSuccess(AbHttpStatus.SUCCESS_CODE, resultString);
 
-                }else if(responseListener instanceof AbBinaryHttpResponseListener){
+                }else if(responseListener instanceof AbByteArrayHttpResponseListener){
                     //字节
                     byte[] resultByte = readByteArray(httpURLConnection ,responseListener,false);
-                    AbBinaryHttpResponseListener binaryHttpResponseListener =  (AbBinaryHttpResponseListener)responseListener;
+                    AbByteArrayHttpResponseListener binaryHttpResponseListener =  (AbByteArrayHttpResponseListener)responseListener;
                     binaryHttpResponseListener.onSuccess(AbHttpStatus.SUCCESS_CODE, resultByte);
 
                 }else if(responseListener instanceof AbFileHttpResponseListener){
@@ -1273,8 +1282,8 @@ public class AbHttpUtil {
                                 AbLogUtil.i(context, "SUCCESS_MESSAGE "+AbAppConfig.MISSING_PARAMETERS);
                             }
 
-                        }else if(responseListener instanceof AbBinaryHttpResponseListener){
-                            AbBinaryHttpResponseListener binaryHttpResponseListener =  (AbBinaryHttpResponseListener)responseListener;
+                        }else if(responseListener instanceof AbByteArrayHttpResponseListener){
+                            AbByteArrayHttpResponseListener binaryHttpResponseListener =  (AbByteArrayHttpResponseListener)responseListener;
                             if(response.length >= 2){
                                 binaryHttpResponseListener.onSuccess((Integer) response[0],(byte[])response[1]);
                             }else{

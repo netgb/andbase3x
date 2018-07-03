@@ -1,5 +1,20 @@
 package com.andbase.library.util;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.os.StatFs;
+
+import com.andbase.library.app.global.AbAppConfig;
+import com.andbase.library.util.encrypt.AbMd5;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,21 +30,6 @@ import java.net.URL;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.os.Environment;
-import android.os.StatFs;
-
-import com.andbase.library.app.global.AbAppConfig;
-import com.andbase.library.util.encrypt.AbMd5;
 
 
 /**
@@ -239,6 +239,7 @@ public class AbFileUtil {
 			InputStream is = assetManager.open(fileName);
 			bit = BitmapFactory.decodeStream(is);
 	    } catch (Exception e) {
+			e.printStackTrace();
 	    	AbLogUtil.d(AbFileUtil.class, "获取图片异常："+e.getMessage());
 		}
 		return bit;

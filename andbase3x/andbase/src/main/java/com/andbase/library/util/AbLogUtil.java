@@ -1,11 +1,11 @@
 
 package com.andbase.library.util;
 
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.content.Context;
 import android.util.Log;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 
 /**
@@ -49,7 +49,7 @@ public class AbLogUtil {
 		String tag = context.getClass().getSimpleName();
 		d(tag, message);
 	}
-	
+
 	/**
 	 * debug日志
 	 * @param clazz
@@ -70,7 +70,7 @@ public class AbLogUtil {
 		String tag = context.getClass().getSimpleName();
         d(tag, buildMessage(format, args));
     }
-	
+
 	/**
 	 * debug日志
 	 * @param clazz
@@ -81,7 +81,7 @@ public class AbLogUtil {
 		String tag = clazz.getSimpleName();
         d(tag, buildMessage(format, args));
     }
-	
+
 	/**
 	 * info日志
 	 * @param tag
@@ -100,7 +100,7 @@ public class AbLogUtil {
 		String tag = context.getClass().getSimpleName();
 		i(tag, message);
 	}
-	
+
 	/**
 	 * info日志
 	 * @param clazz
@@ -121,7 +121,7 @@ public class AbLogUtil {
 		String tag = context.getClass().getSimpleName();
         i(tag, buildMessage(format, args));
     }
-	
+
 	/**
 	 * info日志
 	 * @param clazz
@@ -132,8 +132,8 @@ public class AbLogUtil {
 		String tag = clazz.getSimpleName();
         i(tag, buildMessage(format, args));
     }
-	
-	
+
+
 	
 	/**
 	 * error日志
@@ -153,7 +153,7 @@ public class AbLogUtil {
 		String tag = context.getClass().getSimpleName();
 		e(tag, message);
 	}
-	
+
 	/**
 	 * error日志
 	 * @param clazz
@@ -175,7 +175,7 @@ public class AbLogUtil {
 		String tag = context.getClass().getSimpleName();
         e(tag, buildMessage(format, args));
     }
-	
+
 	/**
 	 * error日志
 	 * @param clazz
@@ -186,7 +186,7 @@ public class AbLogUtil {
 		String tag = clazz.getSimpleName();
         e(tag, buildMessage(format, args));
     }
-	
+
 	/**
 	 * 记录当前时间毫秒.
 	 * 

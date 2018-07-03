@@ -1,8 +1,11 @@
 package com.andbase.library.view.recycler;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.andbase.library.util.AbViewUtil;
 
 /**
  * Copyright upu173.com
@@ -13,20 +16,25 @@ import android.view.View;
  */
 
 public class AbSpaceItemDecoration extends RecyclerView.ItemDecoration {
-
+    private Context context;
     private int space;
     private int column;
     private boolean hasHeader;
     private boolean hasFooter;
 
-    public AbSpaceItemDecoration(int space, int column) {
-        this.space = space;
+    /**1行的第1个和最后一个要不要边距*/
+    private boolean leftRightPadding = false;
+
+    public AbSpaceItemDecoration(Context context,int space, int column) {
+        this.context = context;
+        this.space = (int) AbViewUtil.dip2px(context,space);
         this.column = column;
         this.hasHeader = false;
     }
 
-    public AbSpaceItemDecoration(int space, int column,boolean hasHeader,boolean hasFooter) {
-        this.space = space;
+    public AbSpaceItemDecoration(Context context,int space, int column,boolean hasHeader,boolean hasFooter) {
+        this.context = context;
+        this.space = (int) AbViewUtil.dip2px(context,space);
         this.column = column;
         this.hasHeader = hasHeader;
         this.hasFooter = hasFooter;
@@ -34,30 +42,52 @@ public class AbSpaceItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-
-        outRect.bottom = space;
+        outRect.top = space/2;
+        outRect.bottom = space/2;
         int position = parent.getChildLayoutPosition(view);
         if(hasHeader){
             if(position == 0){
+                outRect.top = 0;
                 outRect.left = 0;
                 outRect.right = 0;
-            }else if(position % column == 0){
-                outRect.left = space;
-                outRect.right = space;
+                outRect.bottom = 0;
             }else{
-                outRect.left = space;
-                outRect.right = 0;
-            }
+                if(leftRightPadding){
+                    if((position-1)%column == 0){
+                        outRect.left = space;
+                        outRect.right = space/2;
+                    }else if((position-1)%column == column-1){
+                        outRect.left = space/2;
+                        outRect.right = space;
+                    }else{
+                        outRect.left = space/2;
+                        outRect.right = space/2;
+                    }
 
+                }else{
+                    outRect.left = space/2;
+                    outRect.right = space/2;
+                }
+            }
 
         }else{
-            if((position+1) % column == 0){
-                outRect.left = space;
-                outRect.right = space;
+            if(leftRightPadding){
+                if(position%column == 0){
+                    outRect.left = space;
+                    outRect.right = space/2;
+                }else if(position%column == column-1){
+                    outRect.left = space/2;
+                    outRect.right = space;
+                }else{
+                    outRect.left = space/2;
+                    outRect.right = space/2;
+                }
+
             }else{
-                outRect.left = space;
-                outRect.right = 0;
+                outRect.left = space/2;
+                outRect.right = space/2;
             }
+
         }
 
         //最后一个是footer
@@ -69,7 +99,9 @@ public class AbSpaceItemDecoration extends RecyclerView.ItemDecoration {
             }
         }
 
-
     }
 
+    public void setLeftRightPadding(boolean hasLeftRightPadding) {
+        this.leftRightPadding = hasLeftRightPadding;
+    }
 }

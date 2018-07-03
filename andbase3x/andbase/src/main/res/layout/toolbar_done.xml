@@ -8,16 +8,14 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?android:attr/actionBarSize"
-        android:orientation="horizontal">
+        android:layout_height="@dimen/tool_bar_height">
 
         <ImageView
             android:id="@+id/back_btn"
-            android:layout_width="?android:attr/actionBarSize"
-            android:layout_height="?android:attr/actionBarSize"
-            android:layout_alignParentLeft="true"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
             android:src="@drawable/ic_action_back"
             android:scaleType="center"
             android:background="@drawable/bg_action_button"/>
@@ -34,8 +32,9 @@
 
         <ImageView
             android:id="@+id/done_btn"
-            android:layout_width="?android:attr/actionBarSize"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_width="40dip"
+            android:layout_height="40dip"
+            android:layout_marginRight="10dip"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_action_done"

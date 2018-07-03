@@ -4,13 +4,15 @@
     <style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
         <!-- ActionBar的颜色 -->
-        <item name="colorPrimary">?attr/colorPrimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
 
         <!-- 随主题而改变的颜色（如CheckBox的颜色） -->
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- 状态栏的颜色 -->
-        <item name="colorPrimaryDark">?attr/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+
+        <item name="colorPrimaryTranslucent">@color/color_primary_translucent</item>
 
         <!-- 状态栏透明  -->
         <item name="android:windowTranslucentStatus">false</item>
@@ -31,7 +33,7 @@
 
         <item name="android:scrollbarSize">3dip</item>
         <item name="android:scrollbarStyle">insideOverlay</item>
-        <item name="android:scrollbarThumbVertical">?attr/colorPrimary</item>
+        <item name="android:scrollbarThumbVertical">@color/colorPrimary</item>
         <item name="android:scrollbarTrackVertical">@color/gray</item>
 
         <item name="android:windowAnimationStyle">@style/activity_anim</item>

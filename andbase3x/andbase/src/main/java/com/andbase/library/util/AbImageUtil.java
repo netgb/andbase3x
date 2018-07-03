@@ -1,12 +1,5 @@
 package com.andbase.library.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -31,7 +24,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.media.ThumbnailUtils;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -39,6 +31,13 @@ import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 
 import com.andbase.library.R;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
 
 /**
  * Copyright upu173.com
@@ -530,10 +529,11 @@ public class AbImageUtil {
 		}
 		return resizeBmp;
 	}
-	
+
+
 	/**
 	 * 根据等比例缩放图片.
-	 * 
+	 *
 	 * @param bitmap
 	 *            the bitmap
 	 * @param scale
@@ -541,6 +541,18 @@ public class AbImageUtil {
 	 * @return Bitmap 新图片
 	 */
 	public static Bitmap scaleBitmap(Bitmap bitmap, float scale) {
+		return scaleBitmap(bitmap,scale,true);
+	}
+	
+	/**
+	 * 根据等比例缩放图片.
+	 * 
+	 * @param bitmap the bitmap
+	 * @param scale 比例
+	 * @param recycled 释放
+	 * @return Bitmap 新图片
+	 */
+	public static Bitmap scaleBitmap(Bitmap bitmap, float scale,final boolean recycled) {
 
 		if (!checkBitmap(bitmap)) {
 			return null;
@@ -564,7 +576,7 @@ public class AbImageUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (resizeBmp != bitmap) {
+			if (resizeBmp != bitmap && recycled) {
 				bitmap.recycle();
 			}
 		}

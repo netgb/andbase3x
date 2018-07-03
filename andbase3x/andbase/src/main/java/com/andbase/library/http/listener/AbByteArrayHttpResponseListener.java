@@ -7,14 +7,14 @@ import com.andbase.library.http.AbHttpUtil;
  * Author 还如一梦中
  * Date 2016/6/14 17:54
  * Email 396196516@qq.com
- * Info Http响应监听器，返回二进制数据
+ * Info Http响应监听器，返回Byte 数组数据
  */
-public abstract class AbBinaryHttpResponseListener extends AbHttpResponseListener {
+public abstract class AbByteArrayHttpResponseListener extends AbHttpResponseListener {
 	
     /**
      * 空构造函数.
      */
-	public AbBinaryHttpResponseListener() {
+	public AbByteArrayHttpResponseListener() {
 		super();
 	}
 	

@@ -6,7 +6,9 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
-import android.widget.ScrollView;
+import android.view.ViewGroup;
+
+import com.andbase.library.view.refresh.AbPullToRefreshView;
 
 
 /**
@@ -19,18 +21,18 @@ import android.widget.ScrollView;
 public class AbInnerViewPager extends ViewPager {
 
 	/** 父滚动布局 */
-	private ScrollView parentScrollView;
+	private ViewGroup parentView;
 
 	/** 手势. */
-	private GestureDetector mGestureDetector;
-	
+	private GestureDetector gestureDetector;
+
 	/**
 	 * 构造函数.
 	 * @param context the context
 	 */
 	public AbInnerViewPager(Context context) {
 		super(context);
-		mGestureDetector = new GestureDetector(new YScrollDetector());
+		gestureDetector = new GestureDetector(new YScrollDetector());
 		setFadingEdgeLength(0);
 	}
 
@@ -41,7 +43,7 @@ public class AbInnerViewPager extends ViewPager {
 	 */
 	public AbInnerViewPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mGestureDetector = new GestureDetector(new YScrollDetector());
+		gestureDetector = new GestureDetector(new YScrollDetector());
 		setFadingEdgeLength(0);
 	}
 	
@@ -52,30 +54,63 @@ public class AbInnerViewPager extends ViewPager {
 	 */
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		return super.onInterceptTouchEvent(ev)
-				&& mGestureDetector.onTouchEvent(ev);
+		return super.onInterceptTouchEvent(ev) && gestureDetector.onTouchEvent(ev);
 	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+
+		int action = ev.getAction();
+		switch (action) {
+			case MotionEvent.ACTION_DOWN:
+				if (parentView != null){
+					if(parentView instanceof AbPullToRefreshView){
+						AbPullToRefreshView pullToRefreshView = (AbPullToRefreshView)parentView;
+						pullToRefreshView.setEnabled(false);
+					}
+				}
+				break;
+			case MotionEvent.ACTION_UP:
+				if (parentView != null){
+					if(parentView instanceof AbPullToRefreshView){
+						AbPullToRefreshView pullToRefreshView = (AbPullToRefreshView)parentView;
+						pullToRefreshView.setEnabled(true);
+					}
+				}
+				break;
+			case MotionEvent.ACTION_CANCEL:
+				if (parentView != null){
+					if(parentView instanceof AbPullToRefreshView){
+						AbPullToRefreshView pullToRefreshView = (AbPullToRefreshView)parentView;
+						pullToRefreshView.setEnabled(true);
+					}
+				}
+				break;
+		}
+		return super.dispatchTouchEvent(ev);
+	}
+
 
 	/**
 	 * 设置父级的View.
 	 * @param flag 父是否滚动开关
 	 */
 	private void setParentScrollAble(boolean flag) {
-		if(parentScrollView!=null){
-			parentScrollView.requestDisallowInterceptTouchEvent(!flag);
+		if(parentView!=null){
+			parentView.requestDisallowInterceptTouchEvent(!flag);
 		}
 
 	}
 
 	/**
-	 * 如果外层有ScrollView需要设置.
-	 * @param parentScrollView the new parent scroll view
+	 * 如果外层有滚动需要设置.
+	 * @param parentView the parent view
 	 */
-	public void setParentScrollView(ScrollView parentScrollView) {
-		this.parentScrollView = parentScrollView;
+	public void setParentView(ViewGroup parentView) {
+		this.parentView = parentView;
 	}
 
-	
+
 	/**
 	 * 手势类.
 	 */
@@ -85,7 +120,7 @@ public class AbInnerViewPager extends ViewPager {
 		public boolean onScroll(MotionEvent e1, MotionEvent e2,
 				float distanceX, float distanceY) {
 			
-			if (Math.abs(distanceX) >= Math.abs(distanceY)) {
+			if (Math.abs(distanceX) >= Math.abs(distanceY)/2) {
 				//父亲不滑动
 				setParentScrollAble(false);
 				return true;
@@ -95,7 +130,5 @@ public class AbInnerViewPager extends ViewPager {
 			return false;
 		}
 	}
-
-	
 
 }

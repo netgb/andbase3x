@@ -30,7 +30,7 @@
             android:layout_height="30dip"
             android:layout_gravity="center"
             android:layout_marginTop="40dip"
-            android:background="@drawable/button_bg_storke_r15"
+            android:background="@drawable/button_bg_storke_corner"
             android:textColor="@color/gray_text"
             android:text="关闭"
             android:textSize="14sp"/>

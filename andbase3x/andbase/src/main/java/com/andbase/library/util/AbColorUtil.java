@@ -65,7 +65,7 @@ public class AbColorUtil {
                 tintColor - 0x99000000,
                 tintColor - 0x99000000,
                 tintColor | 0xFF000000,
-                0xFF616161   //一般状态
+                0x90757575   //一般状态
         };
         return new ColorStateList(states, colors);
     }
@@ -81,12 +81,12 @@ public class AbColorUtil {
         };
 
         int[] colors = new int[]{
-                tintColor - 0xE1000000,
-                0x10000000,   //不可用
+                tintColor - 0xE1000000, //不可用
+                0x20000000,             //不可用
                 tintColor - 0xD0000000, //右边 按下
-                0x60000000,  //左边 按下
+                0x80757575,             //左边 按下
                 tintColor - 0x96000000, //选中右边背景
-                0x50000000 //选中左边背景
+                0x809E9E9E              //选中左边背景
         };
         return new ColorStateList(states, colors);
     }
